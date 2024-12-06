@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.ca3.model.Memory;
 import com.example.ca3.utils.FirebaseUtils;
+import com.example.ca3.utils.LocationUtils;
 import java.util.List;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import javax.inject.Inject;
@@ -17,14 +18,14 @@ public class MapViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<Memory>> memories = new MutableLiveData<>();
     private final MutableLiveData<Location> currentLocation = new MutableLiveData<>();
+    private final LocationUtils locationUtils;
 
     @Inject
     public MapViewModel(@NonNull Application application) {
         super(application);
+        locationUtils = new LocationUtils(application);
         loadMemories();
-        // TODO: Initialize location services and set currentLocation
-        // Initialize location services and set currentLocation
-        // This requires additional implementation
+        fetchCurrentLocation();
     }
 
     public LiveData<List<Memory>> getMemories() {
@@ -33,6 +34,11 @@ public class MapViewModel extends AndroidViewModel {
 
     public LiveData<Location> getCurrentLocation() {
         return currentLocation;
+    }
+
+    public void fetchCurrentLocation() {
+        locationUtils.getCurrentLocation();
+        locationUtils.getCurrentLocationLiveData().observeForever(currentLocation::postValue);
     }
 
     private void loadMemories() {
@@ -44,8 +50,20 @@ public class MapViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(Exception e) {
-                // Handle failure
+                // Handle failure, e.g., log or show a message
+                e.printStackTrace();
             }
         });
+    }
+
+    public Memory getMemoryById(String memoryId) {
+        if (memories.getValue() != null) {
+            for (Memory memory : memories.getValue()) {
+                if (memory.getId().equals(memoryId)) {
+                    return memory;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -31,10 +31,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
+
+
 
 dependencies {
 
@@ -62,10 +67,10 @@ dependencies {
     implementation (libs.firebase.messaging.ktx)
 
     // Google Maps and Places
-    implementation (libs.play.services.maps.v1810)
-    implementation (libs.play.services.location)
-    implementation(libs.play.services.maps)
+    implementation (libs.gms.play.services.maps.v1810)
+    implementation (libs.play.services.location.v2101)
     implementation (libs.places)
+    implementation (libs.google.android.maps.utils)
 
     // CameraX
     implementation (libs.camera.core)
@@ -77,16 +82,15 @@ dependencies {
     implementation (libs.glide)
 
     // Room for Offline Caching
-    implementation (libs.room.runtime)
-    implementation (libs.room.compiler)
-    implementation (libs.room.ktx)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
 
     // Hilt for Dependency Injection
     implementation (libs.hilt.android)
-    implementation (libs.hilt.android.compiler)
 
     // MPAndroidChart for Data Visualization
     implementation (libs.mpandroidchart)
+
 
     // Coroutines for Asynchronous Operations
     implementation (libs.kotlinx.coroutines.android)
@@ -94,7 +98,6 @@ dependencies {
 
     //Recycler View
     implementation(libs.recyclerview)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

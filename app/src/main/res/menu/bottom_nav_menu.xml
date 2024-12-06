@@ -2,22 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/homeFragment"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_map"
+        android:id="@+id/mapFragment"
         android:icon="@drawable/ic_maps"
         android:title="@string/map" />
 
     <item
-        android:id="@+id/navigation_gallery"
+        android:id="@+id/galleryFragment"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/gallery" />
+    <item
+        android:id="@+id/analyticsFragment"
+        android:icon="@drawable/amu_bubble_mask"
+        android:title="@string/title_analytics" />
 
     <item
-        android:id="@+id/navigation_settings"
+        android:id="@+id/settingsFragment"
         android:icon="@drawable/googleg_standard_color_18"
         android:title="@string/settings" />
 
