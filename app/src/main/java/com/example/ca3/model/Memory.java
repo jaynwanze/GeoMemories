@@ -9,9 +9,19 @@ public class Memory {
     private GeoPoint location;
     private long timestamp;
     private String weatherInfo;
+    private String userId;
 
     public Memory() {
-        // Default constructor required for calls to DataSnapshot.getValue(Memory.class)
+    }
+
+    public Memory(String id, String photoUrl, String description, GeoPoint location, long timestamp, String weatherInfo, String userId) {
+        this.id = id;
+        this.photoUrl = photoUrl;
+        this.description = description;
+        this.location = location;
+        this.timestamp = timestamp;
+        this.weatherInfo = weatherInfo;
+        this.userId = userId;
     }
 
     // Getters and Setters
@@ -51,4 +61,10 @@ public class Memory {
     }
 
     public void setWeatherInfo(String weatherInfo) { this.weatherInfo = weatherInfo; }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) { this.userId = userId; }
 }
