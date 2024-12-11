@@ -50,15 +50,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private MapViewModel mapViewModel;
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-
-    @Inject
-    UserPreferencesManager userPreferencesManager;
+    private UserPreferencesManager userPreferencesManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        userPreferencesManager = UserPreferencesManager.getInstance(getContext());
 
         // Obtain ViewModel
         mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);

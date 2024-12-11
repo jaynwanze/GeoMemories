@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.ca3.model.User;
+import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;
 import com.example.ca3.utils.UserPreferencesManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class AuthViewModel extends AndroidViewModel {
 
-    private final FirebaseUtils firebaseUtils;
     private final UserPreferencesManager userPreferencesManager;
 
     // LiveData for registration status
@@ -35,8 +35,7 @@ public class AuthViewModel extends AndroidViewModel {
     @Inject
     public AuthViewModel(@NonNull Application application) {
         super(application);
-        this.firebaseUtils = new FirebaseUtils();
-        this.userPreferencesManager = new UserPreferencesManager(application);
+        this.userPreferencesManager = UserPreferencesManager.getInstance(application);
     }
 
     public LiveData<RegistrationStatus> getRegistrationStatus() {
@@ -64,7 +63,7 @@ public class AuthViewModel extends AndroidViewModel {
                     // Create a new user document in Firestore
                     User user = new User(firebaseUser.getUid(), email, name, dob, password);
                     userPreferencesManager.saveUserId(user.getId());
-                    firebaseUtils.createUser(user, new FirebaseUtils.UserCallback() {
+                    FirebaseUtils.createUser(user, new Callback.UserCallback() {
                         @Override
                         public void onSuccess() {
                             registrationStatus.postValue(RegistrationStatus.SUCCESS);

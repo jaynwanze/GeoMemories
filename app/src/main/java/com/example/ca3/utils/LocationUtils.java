@@ -1,7 +1,10 @@
 package com.example.ca3.utils;
 
+import static com.squareup.okhttp.internal.Internal.instance;
+
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 import android.location.Location;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -16,10 +19,18 @@ public class LocationUtils {
 
     private final FusedLocationProviderClient fusedLocationClient;
     private final MutableLiveData<Location> currentLocation = new MutableLiveData<>();
+    private static LocationUtils instance;
 
-    @Inject
-    public LocationUtils(Application application) {
+    private LocationUtils(Application application) {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(application);
+    }
+
+
+    public static synchronized LocationUtils getInstance(Application application) {
+        if (instance == null) {
+            instance = new LocationUtils(application);
+        }
+        return instance;
     }
 
     @SuppressLint("MissingPermission")

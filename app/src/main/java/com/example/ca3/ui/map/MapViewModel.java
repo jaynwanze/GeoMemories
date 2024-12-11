@@ -7,8 +7,12 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.ca3.model.Memory;
+import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;
 import com.example.ca3.utils.LocationUtils;
+import com.example.ca3.utils.UserPreferencesManager;
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.List;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import javax.inject.Inject;
@@ -19,13 +23,13 @@ public class MapViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Memory>> memories = new MutableLiveData<>();
     private final MutableLiveData<Location> currentLocation = new MutableLiveData<>();
     private final LocationUtils locationUtils;
-    private final FirebaseUtils firebaseUtils;
+    private final UserPreferencesManager userPreferencesManager;
 
     @Inject
     public MapViewModel(@NonNull Application application) {
         super(application);
-        locationUtils = new LocationUtils(application);
-        this.firebaseUtils = new FirebaseUtils();
+        userPreferencesManager = UserPreferencesManager.getInstance(application);
+        this.locationUtils = LocationUtils.getInstance(application);
         loadMemories();
         fetchCurrentLocation();
     }
@@ -44,7 +48,8 @@ public class MapViewModel extends AndroidViewModel {
     }
 
     private void loadMemories() {
-        FirebaseUtils.getAllMemories(new FirebaseUtils.MemoryCallback() {
+        String currentUserId = userPreferencesManager.getUserId();
+        FirebaseUtils.getAllMemories(currentUserId,new Callback.MemoryCallback() {
             @Override
             public void onSuccess(List<Memory> memoryList) {
                 memories.postValue(memoryList);
@@ -71,8 +76,8 @@ public class MapViewModel extends AndroidViewModel {
 
 
     // Method to create a new memory
-    public void createMemory(Memory memory, FirebaseUtils.CreateMemoryCallback callback) {
-        firebaseUtils.createMemory(memory, new FirebaseUtils.CreateMemoryCallback() {
+    public void createMemory(Memory memory, Callback.CreateMemoryCallback callback) {
+        FirebaseUtils.createMemory(memory, new Callback.CreateMemoryCallback() {
             @Override
             public void onSuccess() {
                 // Optionally, refresh the memories list

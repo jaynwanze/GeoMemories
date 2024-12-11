@@ -12,43 +12,8 @@ public class FirebaseUtils {
 
     private static final FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    public interface MemoryCallback {
-        void onSuccess(List<Memory> memoryList);
-        void onFailure(Exception e);
-    }
-
-    public interface MemoryListCallback {
-        void onSuccess(List<Memory> memoryList);
-        void onFailure(Exception e);
-    }
-
-    public interface MemorySaveCallback {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    public interface PhotoUploadCallback {
-        void onSuccess(String downloadUrl);
-        void onFailure(Exception e);
-    }
-
-    public interface MemorySingleCallback {
-        void onSuccess(Memory memory);
-        void onFailure(Exception e);
-    }
-
-    public interface UserCallback {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    public interface CreateMemoryCallback {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
     // Create a new user document in Firestore
-    public void createUser(User user, FirebaseUtils.UserCallback callback) {
+    public static void createUser(User user, Callback.UserCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("users")
                 .document(user.getId())
@@ -58,7 +23,7 @@ public class FirebaseUtils {
     }
 
     // Method to create a new Memory
-    public void createMemory(Memory memory, CreateMemoryCallback callback) {
+    public static void createMemory(Memory memory, Callback.CreateMemoryCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
                 .document(memory.getId()) // Assuming 'id' is generated externally
@@ -68,9 +33,10 @@ public class FirebaseUtils {
     }
 
 
-    public static void getAllMemories(MemoryCallback callback) {
+    public static void getAllMemories(String userId, Callback.MemoryCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
+                .whereEqualTo("userId", userId) // Filter by userId
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Memory> memories = queryDocumentSnapshots.toObjects(Memory.class);
@@ -79,20 +45,21 @@ public class FirebaseUtils {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public static void getRecentMemories(int limit, MemoryListCallback callback) {
+    public static void getRecentMemories(int limit, String userId, Callback.MemoryListCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(limit)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Memory> memories = queryDocumentSnapshots.toObjects(Memory.class);
-                    callback.onSuccess(memories);
-                })
-                .addOnFailureListener(callback::onFailure);
+                    .whereEqualTo("userId", userId) // Filter by userId
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(limit)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        List<Memory> memories = queryDocumentSnapshots.toObjects(Memory.class);
+                        callback.onSuccess(memories);
+                    })
+                    .addOnFailureListener(callback::onFailure);
     }
 
-    public static void saveMemory(Memory memory, MemorySaveCallback callback) {
+    public static void saveMemory(Memory memory, Callback.MemorySaveCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Create unique memory id
         String memoryId = db.collection("memories").document().getId();
@@ -105,13 +72,13 @@ public class FirebaseUtils {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public static void uploadPhoto(String uid, String memoryId, Uri photoUri, PhotoUploadCallback callback) {
+    public static void uploadPhoto(String userId, String memoryId, Uri photoUri, Callback.PhotoUploadCallback callback) {
         if (photoUri == null) {
             callback.onFailure(new Exception("Photo URI is null"));
             return;
         }
         // Construct the storage path: memories/{uid}/{memoryId}
-        String storagePath = "memories/" + uid + "/" + memoryId;
+        String storagePath = "memories/" + userId + "/" + memoryId;
         StorageReference photoRef = storage.getReference().child(storagePath);
 
         photoRef.putFile(photoUri)
@@ -122,7 +89,7 @@ public class FirebaseUtils {
     }
 
 
-    public static void getMemoryById(String memoryId, MemorySingleCallback callback) {
+    public static void getMemoryById(String memoryId, String userId, Callback.MemorySingleCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
                 .document(memoryId)
@@ -130,7 +97,11 @@ public class FirebaseUtils {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Memory memory = documentSnapshot.toObject(Memory.class);
-                        callback.onSuccess(memory);
+                        if (memory != null && memory.getUserId().equals(userId)) {
+                            callback.onSuccess(memory);
+                        } else {
+                            callback.onFailure(new Exception("Memory not found or does not belong to the user"));
+                        }
                     } else {
                         callback.onFailure(new Exception("Memory not found"));
                     }
