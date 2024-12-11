@@ -1,6 +1,8 @@
 package com.example.ca3.utils;
 
 import android.net.Uri;
+import android.util.Log;
+
 import com.example.ca3.model.*;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -45,19 +47,24 @@ public class FirebaseUtils {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    // FirebaseUtils.java
     public static void getRecentMemories(int limit, String userId, Callback.MemoryListCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
-                    .whereEqualTo("userId", userId) // Filter by userId
-                    .orderBy("timestamp", Query.Direction.DESCENDING)
-                    .limit(limit)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        List<Memory> memories = queryDocumentSnapshots.toObjects(Memory.class);
-                        callback.onSuccess(memories);
-                    })
-                    .addOnFailureListener(callback::onFailure);
+                .whereEqualTo("userId", userId) // Filter by userId
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Memory> memories = queryDocumentSnapshots.toObjects(Memory.class);
+                    callback.onSuccess(memories);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirestoreError", "Error fetching recent memories", e);
+                    callback.onFailure(e);
+                });
     }
+
 
     public static void saveMemory(Memory memory, Callback.MemorySaveCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

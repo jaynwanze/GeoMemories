@@ -1,5 +1,7 @@
 package com.example.ca3.model;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.GeoPoint;
 
 public class Memory {
@@ -7,14 +9,14 @@ public class Memory {
     private String photoUrl;
     private String description;
     private GeoPoint location;
-    private long timestamp;
+    private Timestamp  timestamp;
     private String weatherInfo;
     private String userId;
 
     public Memory() {
     }
 
-    public Memory(String id, String photoUrl, String description, GeoPoint location, long timestamp, String weatherInfo, String userId) {
+    public Memory(String id, String photoUrl, String description, GeoPoint location, Timestamp timestamp, String weatherInfo, String userId) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.description = description;
@@ -50,11 +52,11 @@ public class Memory {
 
     public void setLocation(GeoPoint location) { this.location = location; }
 
-    public long getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
 
     public String getWeatherInfo() {
         return weatherInfo;

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.memorydetail.MemoryDetailFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Memory Image -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageViewMemoryDetail"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/memory_image_detail" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/textViewDescriptionDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/textViewDescriptionContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Detailed description of the memory."
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+
+        <!-- Location -->
+        <TextView
+            android:id="@+id/textViewLocationDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/textViewLocationContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location details here."
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+
+        <!-- Weather Info -->
+        <TextView
+            android:id="@+id/textViewWeatherDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weather"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/textViewWeatherContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weather information here."
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.ca3.R;
 import com.example.ca3.activity.CaptureMemoryActivity;
@@ -44,22 +45,35 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
         // Setup Recent Memories RecyclerView
         setupRecentMemoriesRecyclerView();
 
         // Observe Recent Memories
         homeViewModel.getRecentMemories().observe(getViewLifecycleOwner(), memories -> {
-            recentMemoriesAdapter.submitList(memories);
+            if (memories == null)
+            {
+                //DISPLAY No Memories
+
+            }
+            else {
+                recentMemoriesAdapter.submitList(memories);
+            }
         });
 
         // Observe Statistics Data
         homeViewModel.getMemoriesStatistics().observe(getViewLifecycleOwner(), stats -> {
             setupPieChart(stats);
         });
-
         // Setup Quick Actions Click Listeners
         setupQuickActions();
+
+        // HomeFragment.java
+        homeViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                // Display a Snackbar, Toast, or an error view
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+            }
+        });
 
         return root;
     }
@@ -82,7 +96,7 @@ public class HomeFragment extends Fragment {
         PieChart pieChart = binding.pieChartMemories;
         pieChart.setUsePercentValues(true);
         pieChart.getDescription().setEnabled(false);
-        pieChart.setCenterText("Memories Distribution");
+        pieChart.setCenterText("Memories By Location");
         pieChart.setCenterTextSize(16f);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleRadius(40f);

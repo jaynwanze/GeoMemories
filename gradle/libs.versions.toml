@@ -9,6 +9,7 @@ googlePlayServicesMaps = "18.1.0"
 gson = "2.11.0"
 hiltAndroid = "2.53"
 hiltAndroidCompiler = "2.53"
+hiltWork = "1.2.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -37,6 +38,8 @@ volley = "1.2.1"
 cronetEmbedded = "119.6045.31"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 firebaseFirestore = "25.1.1"
+workRuntime = "2.10.0"
+workRuntimeKtx = "2.10.0"
 
 [libraries]
 camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraView" }
@@ -55,6 +58,7 @@ google-android-maps-utils = { module = "com.google.maps.android:android-maps-uti
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -82,6 +86,8 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRunti
 volley = { module = "com.android.volley:volley", version.ref = "volley" }
 cronet-embedded = { group = "org.chromium.net", name = "cronet-embedded", version.ref = "cronetEmbedded" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 x-x-x = { module = "io.reactivex:3.0.0" }
 
 [plugins]

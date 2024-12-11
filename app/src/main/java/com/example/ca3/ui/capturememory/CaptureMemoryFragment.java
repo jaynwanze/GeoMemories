@@ -18,8 +18,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.ca3.activity.MainActivity;
 import com.example.ca3.databinding.FragmentCaptureMemoryBinding;
 import com.example.ca3.model.Memory;
+import com.example.ca3.model.User;
 import com.example.ca3.utils.UserPreferencesManager;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+
 import id.zelory.compressor.Compressor;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -51,8 +55,6 @@ public class CaptureMemoryFragment extends Fragment {
     private String currentPhotoPath;
     private UserPreferencesManager userPreferencesManager;
 
-    private ProgressBar progressBar; // Ensure you have a ProgressBar in your layout
-
     private final ActivityResultLauncher<Intent> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == getActivity().RESULT_OK) {
@@ -68,7 +70,7 @@ public class CaptureMemoryFragment extends Fragment {
         binding = FragmentCaptureMemoryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-
+        userPreferencesManager = UserPreferencesManager.getInstance(this.getContext());
 
         captureMemoryViewModel = new ViewModelProvider(this).get(CaptureMemoryViewModel.class);
 
@@ -181,9 +183,8 @@ public class CaptureMemoryFragment extends Fragment {
         Memory memory = new Memory();
         memory.setDescription(description);
         memory.setLocation(new com.google.firebase.firestore.GeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-        memory.setTimestamp(System.currentTimeMillis() / 1000); // Unix timestamp
+        memory.setTimestamp( Timestamp.now());
         memory.setUserId(currentUserId);
-
 
         compressAndUploadImage(photoUri , currentUserId, memory);
 
