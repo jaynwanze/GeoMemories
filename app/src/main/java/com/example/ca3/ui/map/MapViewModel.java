@@ -19,11 +19,13 @@ public class MapViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Memory>> memories = new MutableLiveData<>();
     private final MutableLiveData<Location> currentLocation = new MutableLiveData<>();
     private final LocationUtils locationUtils;
+    private final FirebaseUtils firebaseUtils;
 
     @Inject
     public MapViewModel(@NonNull Application application) {
         super(application);
         locationUtils = new LocationUtils(application);
+        this.firebaseUtils = new FirebaseUtils();
         loadMemories();
         fetchCurrentLocation();
     }
@@ -65,5 +67,23 @@ public class MapViewModel extends AndroidViewModel {
             }
         }
         return null;
+    }
+
+
+    // Method to create a new memory
+    public void createMemory(Memory memory, FirebaseUtils.CreateMemoryCallback callback) {
+        firebaseUtils.createMemory(memory, new FirebaseUtils.CreateMemoryCallback() {
+            @Override
+            public void onSuccess() {
+                // Optionally, refresh the memories list
+                loadMemories();
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
     }
 }

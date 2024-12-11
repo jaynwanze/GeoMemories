@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Date of Birth (MM/DD/YYYY)"
-            android:inputType="date"
+            android:inputType="text"
             android:drawableStart="@drawable/dob"
             android:drawablePadding="10dp"
             android:padding="12dp"
@@ -101,5 +101,16 @@
             android:textColor="@color/teal_700"
             android:layout_marginTop="16dp"
             android:layout_gravity="center_horizontal" />
+
+        <!-- Password Validation-->
+        <TextView
+            android:id="@+id/passwordValidationRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/red"
+            android:textSize="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"/>
     </LinearLayout>
 </ScrollView>

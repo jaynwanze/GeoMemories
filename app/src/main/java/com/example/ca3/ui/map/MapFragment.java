@@ -7,34 +7,41 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ca3.R;
+import com.example.ca3.activity.MemoryDetailActivity;
 import com.example.ca3.databinding.FragmentMapBinding;
+import com.example.ca3.model.Memory;
+import com.bumptech.glide.Glide;
+import com.example.ca3.utils.UserPreferencesManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.ca3.model.Memory;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import com.example.ca3.activity.MemoryDetailActivity;
-import com.bumptech.glide.Glide;
 
-import com.google.android.gms.maps.model.*;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import dagger.hilt.android.AndroidEntryPoint;
+import jakarta.inject.Inject;
 
 @AndroidEntryPoint
 public class MapFragment extends Fragment implements OnMapReadyCallback {
@@ -44,12 +51,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
+    @Inject
+    UserPreferencesManager userPreferencesManager;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // Obtain ViewModel
         mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
 
         // Initialize Map
@@ -119,15 +130,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             if (mMap != null) {
                 mMap.clear();
                 for (Memory memory : memories) {
-                    LatLng location = new LatLng(memory.getLocation().getLatitude(),
-                            memory.getLocation().getLongitude());
-                    MarkerOptions markerOptions = new MarkerOptions()
-                            .position(location)
-                            .title(memory.getDescription())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    Marker marker = mMap.addMarker(markerOptions);
-                    if (marker != null) {
-                        marker.setTag(memory.getId());
+                    if (memory.getUserId().equals(userPreferencesManager.getUserId())) {
+                        LatLng location = new LatLng(memory.getLocation().getLatitude(),
+                                memory.getLocation().getLongitude());
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(location)
+                                .title(memory.getDescription())
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        Marker marker = mMap.addMarker(markerOptions);
+                        if (marker != null) {
+                            marker.setTag(memory.getId());
+                        }
                     }
                 }
             }
@@ -255,11 +268,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         private void renderWindowText(Memory memory) {
             TextView title = window.findViewById(R.id.textViewInfoTitle);
             TextView snippet = window.findViewById(R.id.textViewInfoSnippet);
+            TextView weather = window.findViewById(R.id.textViewInfoWeather);
             ImageView image = window.findViewById(R.id.imageViewInfo);
 
             title.setText(memory.getDescription());
             snippet.setText("Lat: " + memory.getLocation().getLatitude() +
                     ", Lng: " + memory.getLocation().getLongitude());
+            weather.setText("Weather: " + memory.getWeatherInfo());
+
 
             Glide.with(getContext())
                     .load(memory.getPhotoUrl())

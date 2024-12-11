@@ -78,6 +78,10 @@ dependencies {
     implementation (libs.camera.lifecycle)
     implementation (libs.camera.view)
 
+    //Compress
+    implementation ("id.zelory:compressor:2.1.1")
+    implementation ("io.reactivex.rxjava2:rxandroid:2.0.1")
+
     // Glide for Image Loading
     implementation (libs.glide)
 
