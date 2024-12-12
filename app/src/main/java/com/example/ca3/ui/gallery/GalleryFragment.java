@@ -1,5 +1,6 @@
 package com.example.ca3.ui.gallery;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.example.ca3.activity.MemoryDetailActivity;
 import com.example.ca3.adapter.*;
 import com.example.ca3.databinding.FragmentGalleryBinding;
 import com.example.ca3.model.Memory;
@@ -34,6 +37,13 @@ public class GalleryFragment extends Fragment {
         memoryAdapter = new MemoryAdapter();
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         binding.recyclerView.setAdapter(memoryAdapter);
+
+        // Set item click listener
+        memoryAdapter.setOnItemClickListener(memory -> {
+            Intent intent = new Intent(getContext(), MemoryDetailActivity.class);
+            intent.putExtra("memory_id", memory.getId());
+            startActivity(intent);
+        });
 
         // Observe memories
         galleryViewModel.getMemories().observe(getViewLifecycleOwner(), memories -> {

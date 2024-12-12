@@ -3,27 +3,26 @@
 
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@android:drawable/ic_menu_agenda"
         android:title="@string/title_home" />
 
     <item
         android:id="@+id/mapFragment"
-        android:icon="@drawable/ic_maps"
+        android:icon="@android:drawable/ic_menu_mapmode"
         android:title="@string/map" />
 
     <item
         android:id="@+id/galleryFragment"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/gallery" />
     <item
         android:id="@+id/analyticsFragment"
-        android:icon="@drawable/amu_bubble_mask"
+        android:icon="@android:drawable/ic_menu_recent_history"
         android:title="@string/title_analytics" />
 
     <item
         android:id="@+id/settingsFragment"
-        android:icon="@drawable/googleg_standard_color_18"
+        android:icon="@android:drawable/ic_menu_manage"
         android:title="@string/settings" />
-
 
 </menu>

@@ -223,6 +223,7 @@ public class CaptureMemoryFragment extends Fragment {
                             binding.editTextDescription.setText("");
                             photoUri = null;
                             currentPhotoPath = null;
+                            getActivity().finish();
                         }
 
                         @Override
@@ -236,9 +237,7 @@ public class CaptureMemoryFragment extends Fragment {
                     throwable.printStackTrace();
                     Toast.makeText(getContext(), "Image compression failed.", Toast.LENGTH_SHORT).show();
                     getActivity().finish();
-
                 });
-            getActivity().finish();
 
     }
 
@@ -270,10 +269,7 @@ public class CaptureMemoryFragment extends Fragment {
                             })
                             .show();
                 } else {
-                    // User has denied permissions and selected "Don't ask again"
-                    // Guide the user to app settings to grant permissions manually
                     Toast.makeText(getContext(), "Camera permission is required. Please enable it in app settings.", Toast.LENGTH_LONG).show();
-                    // You can optionally open app settings here
                 }
             }
         }
