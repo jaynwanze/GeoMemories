@@ -84,6 +84,7 @@ dependencies {
 
     // Glide for Image Loading
     implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 
     // Room for Offline Caching
     implementation(libs.room.runtime)

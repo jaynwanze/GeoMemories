@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -186,8 +187,10 @@ public class CaptureMemoryFragment extends Fragment {
         memory.setTimestamp( Timestamp.now());
         memory.setUserId(currentUserId);
 
+        //Process image
         compressAndUploadImage(photoUri , currentUserId, memory);
 
+        //Go back to home page
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.putExtra("PROCESSING_MEMORY", true);
         startActivity(intent);
@@ -195,10 +198,7 @@ public class CaptureMemoryFragment extends Fragment {
     }
 
     private void compressAndUploadImage(Uri imageUri, String uid, Memory memory) {
-
-        try {
-        File imageFile = getFileFromUri(imageUri);
-
+        File imageFile = new File(currentPhotoPath);
         if (!imageFile.exists() || !imageFile.isFile()) {
             Toast.makeText(getContext(), "Invalid image file.", Toast.LENGTH_SHORT).show();
             return;
@@ -235,33 +235,12 @@ public class CaptureMemoryFragment extends Fragment {
                     // Handle compression error
                     throwable.printStackTrace();
                     Toast.makeText(getContext(), "Image compression failed.", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+
                 });
-        } catch (IOException e) {
-            Toast.makeText(getContext(), "Failed to process image.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        finally {
             getActivity().finish();
-        }
-    }
 
-    private File getFileFromUri(Uri uri) throws IOException {
-        InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
-        if (inputStream == null) {
-            throw new IOException("Unable to open input stream from Uri");
-        }
-        File tempFile = File.createTempFile("compressed_", ".jpg", requireContext().getCacheDir());
-        OutputStream outputStream = new FileOutputStream(tempFile);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-        inputStream.close();
-        outputStream.close();
-        return tempFile;
     }
-
 
     private boolean fileExists(Uri uri) {
         try (Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null)) {
@@ -274,10 +253,28 @@ public class CaptureMemoryFragment extends Fragment {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 // Permissions granted, proceed with capturing photo
-                // Optionally, you can enable certain UI elements
             } else {
-                Toast.makeText(getContext(), "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
-                // Optionally, disable certain functionality
+                // Permissions not granted, show dialog
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    // User has denied permissions before, explain why they're needed
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Camera Permission Required")
+                            .setMessage("This app needs access to your camera to capture photos.")
+                            .setPositiveButton("Grant", (dialog, which) -> {
+                                // Request permissions again
+                                requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
+                            })
+                            .setNegativeButton("Deny", (dialog, which) -> {
+                                // Handle permission denial
+                                Toast.makeText(getContext(), "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
+                            })
+                            .show();
+                } else {
+                    // User has denied permissions and selected "Don't ask again"
+                    // Guide the user to app settings to grant permissions manually
+                    Toast.makeText(getContext(), "Camera permission is required. Please enable it in app settings.", Toast.LENGTH_LONG).show();
+                    // You can optionally open app settings here
+                }
             }
         }
     }

@@ -68,16 +68,18 @@ public class FirebaseUtils {
 
     public static void saveMemory(Memory memory, Callback.MemorySaveCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Create unique memory id
+        // Generate a unique memory ID
         String memoryId = db.collection("memories").document().getId();
         memory.setId(memoryId);
         db.collection("memories")
-                .add(memory)
-                .addOnSuccessListener(documentReference -> {
+                .document(memoryId)
+                .set(memory)
+                .addOnSuccessListener(aVoid -> {
                     callback.onSuccess();
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
 
     public static void uploadPhoto(String userId, String memoryId, Uri photoUri, Callback.PhotoUploadCallback callback) {
         if (photoUri == null) {
@@ -98,6 +100,8 @@ public class FirebaseUtils {
 
     public static void getMemoryById(String memoryId, String userId, Callback.MemorySingleCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Log.d("memoryId",memoryId);
+        Log.d("userId",userId);
         db.collection("memories")
                 .document(memoryId)
                 .get()
