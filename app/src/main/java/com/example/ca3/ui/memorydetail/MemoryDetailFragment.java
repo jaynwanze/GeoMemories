@@ -92,8 +92,8 @@ public class MemoryDetailFragment extends Fragment {
                         });
 
                 binding.textViewDescriptionContent.setText(memory.getDescription());
-                binding.textViewLocationContent.setText(getLocationName(new Geocoder(getContext()), memory.getLocation()));
-                binding.textViewWeatherContent.setText(memory.getWeatherInfo());
+                binding.textViewLocationContent.setText(getLocationName(new Geocoder(getContext()), memory.getLocation()) != null ? getLocationName(new Geocoder(getContext()), memory.getLocation()) : "Unavailable");
+                binding.textViewWeatherContent.setText(memory.getWeatherInfo() != null ? memory.getWeatherInfo() : "Unavailable");
             }
         });
 

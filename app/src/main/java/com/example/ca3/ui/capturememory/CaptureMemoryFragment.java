@@ -21,6 +21,7 @@ import com.example.ca3.databinding.FragmentCaptureMemoryBinding;
 import com.example.ca3.model.Memory;
 import com.example.ca3.model.User;
 import com.example.ca3.utils.UserPreferencesManager;
+import com.example.ca3.utils.WeatherUtils;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -33,6 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +57,7 @@ public class CaptureMemoryFragment extends Fragment {
     private Uri photoUri;
     private String currentPhotoPath;
     private UserPreferencesManager userPreferencesManager;
+    private String currentWeather;
 
     private final ActivityResultLauncher<Intent> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -165,14 +168,6 @@ public class CaptureMemoryFragment extends Fragment {
             return;
         }
 
-        // Get current location
-        Location currentLocation = captureMemoryViewModel.getCurrentLocation();
-
-        if (currentLocation == null) {
-            Toast.makeText(getContext(), "Unable to get current location.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         // Get current user ID
         String currentUserId = userPreferencesManager.getUserId();
         if (currentUserId == null) {
@@ -180,15 +175,28 @@ public class CaptureMemoryFragment extends Fragment {
             return;
         }
 
-        // Create Memory Object
-        Memory memory = new Memory();
-        memory.setDescription(description);
-        memory.setLocation(new com.google.firebase.firestore.GeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-        memory.setTimestamp( Timestamp.now());
-        memory.setUserId(currentUserId);
+        // Get current location
+        Location currentLocation = captureMemoryViewModel.getCurrentLocation();
 
-        //Process image
-        compressAndUploadImage(photoUri , currentUserId, memory);
+        double latitude = currentLocation.getLatitude();
+        double longitude = currentLocation.getLongitude();
+        captureMemoryViewModel.fetchCurrentWeather(latitude, longitude);
+        //Get current weather info and update memory
+        captureMemoryViewModel.getCurrentWeather().observe(getViewLifecycleOwner(), weatherInfo -> {
+                // Create Memory Object
+                Memory memory = new Memory();
+                memory.setDescription(description);
+                memory.setLocation(new com.google.firebase.firestore.GeoPoint(latitude, longitude));
+                memory.setTimestamp(Timestamp.now());
+                memory.setUserId(currentUserId);
+                memory.setWeatherInfo(weatherInfo);
+
+                // Process image and upload
+                compressAndUploadImage(photoUri, currentUserId, memory);
+
+                // Stop observing after saving
+                captureMemoryViewModel.getCurrentWeather().removeObservers(getViewLifecycleOwner());
+        });
 
         //Go back to home page
         Intent intent = new Intent(getActivity(), MainActivity.class);

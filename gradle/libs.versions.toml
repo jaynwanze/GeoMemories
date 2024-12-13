@@ -41,6 +41,7 @@ googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 firebaseFirestore = "25.1.1"
 workRuntime = "2.10.0"
 workRuntimeKtx = "2.10.0"
+media3Common = "1.5.0"
 
 [libraries]
 camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraView" }
@@ -91,6 +92,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 x-x-x = { module = "io.reactivex:3.0.0" }
+media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

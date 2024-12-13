@@ -100,8 +100,6 @@ public class FirebaseUtils {
 
     public static void getMemoryById(String memoryId, String userId, Callback.MemorySingleCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Log.d("memoryId",memoryId);
-        Log.d("userId",userId);
         db.collection("memories")
                 .document(memoryId)
                 .get()
