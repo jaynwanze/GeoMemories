@@ -1,3 +1,5 @@
+// File: com/example/ca3/ui/map/MapFragment.java
+
 package com.example.ca3.ui.map;
 
 import android.Manifest;
@@ -36,7 +38,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +53,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private UserPreferencesManager userPreferencesManager;
+    private Map<String, Marker> memoryMarkers = new HashMap<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -80,6 +83,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+        } else {
+            Toast.makeText(getContext(), "Error initializing map.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -128,7 +133,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // Observe memories to add markers
         mapViewModel.getMemories().observe(getViewLifecycleOwner(), memories -> {
             if (mMap != null) {
-                mMap.clear();
+                // Remove existing memory markers
+                for (Marker marker : memoryMarkers.values()) {
+                    marker.remove();
+                }
+                memoryMarkers.clear();
+
                 for (Memory memory : memories) {
                     if (memory.getUserId().equals(userPreferencesManager.getUserId())) {
                         LatLng location = new LatLng(memory.getLocation().getLatitude(),
@@ -140,6 +150,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         Marker marker = mMap.addMarker(markerOptions);
                         if (marker != null) {
                             marker.setTag(memory.getId());
+                            memoryMarkers.put(memory.getId(), marker);
                         }
                     }
                 }
@@ -165,8 +176,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-            mapViewModel.fetchCurrentLocation();
+            enableMyLocation();
         } else {
             requestPermissions(new String[]{
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -192,6 +202,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         binding.progressBarMap.setVisibility(View.GONE);
     }
 
+    private void enableMyLocation() {
+        if (mMap == null) return;
+
+        try {
+            mMap.setMyLocationEnabled(true);
+            mapViewModel.fetchCurrentLocation();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -212,14 +233,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                         ContextCompat.checkSelfPermission(requireContext(),
                                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    if (mMap != null) {
-                        try {
-                            mMap.setMyLocationEnabled(true);
-                            mapViewModel.fetchCurrentLocation();
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    enableMyLocation();
                 }
             } else {
                 // Check if user selected "Don't ask again"
@@ -250,6 +264,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapViewModel.refreshMemories();
+        //mapViewModel.fetchCurrentLocation();
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -275,7 +297,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             snippet.setText("Lat: " + memory.getLocation().getLatitude() +
                     ", Lng: " + memory.getLocation().getLongitude());
             weather.setText("Weather: " + memory.getWeatherInfo());
-
 
             Glide.with(getContext())
                     .load(memory.getPhotoUrl())

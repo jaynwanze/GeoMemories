@@ -151,6 +151,13 @@ public class CaptureMemoryFragment extends Fragment {
     }
 
     private void saveMemory() {
+
+        String title = binding.editTextTitle.getText().toString().trim();
+        if (title.isEmpty()) {
+            binding.editTextTitle.setError("Title is required.");
+            return;
+        }
+
         String description = binding.editTextDescription.getText().toString().trim();
         if (description.isEmpty()) {
             binding.editTextDescription.setError("Description is required.");
@@ -185,6 +192,7 @@ public class CaptureMemoryFragment extends Fragment {
         captureMemoryViewModel.getCurrentWeather().observe(getViewLifecycleOwner(), weatherInfo -> {
                 // Create Memory Object
                 Memory memory = new Memory();
+                memory.setTitle(title);
                 memory.setDescription(description);
                 memory.setLocation(new com.google.firebase.firestore.GeoPoint(latitude, longitude));
                 memory.setTimestamp(Timestamp.now());

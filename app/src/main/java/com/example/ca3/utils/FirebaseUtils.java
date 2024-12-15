@@ -24,6 +24,25 @@ public class FirebaseUtils {
                 .addOnFailureListener(callback::onFailure);
     }
 
+    public static void getUser(String userId, Callback.getUserCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(userId).get().addOnSuccessListener(
+                documentSnapshot -> {
+                    if (documentSnapshot.exists() ) {
+                        User user = documentSnapshot.toObject(User.class);
+                        callback.onSuccess(user);
+                    } else {
+                        callback.onFailure(new Exception("User not found"));
+                        }
+                }
+        ).addOnFailureListener(
+                e -> {
+                    callback.onFailure(e);
+                    Log.e("FirebaseUtils", "Error getting user", e);
+                }
+        );
+    }
+
     // Method to create a new Memory
     public static void createMemory(Memory memory, Callback.CreateMemoryCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

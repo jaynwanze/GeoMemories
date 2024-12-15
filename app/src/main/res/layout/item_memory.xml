@@ -21,12 +21,12 @@
             android:scaleType="centerCrop"
             android:contentDescription="@string/memory_image" />
 
-        <!-- Memory Description -->
+        <!-- Memory Title -->
         <TextView
-            android:id="@+id/textViewDescription"
+            android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Memory Description"
+            android:text="Memory Title"
             android:textSize="16sp"
             android:textStyle="bold"
             android:padding="8dp"

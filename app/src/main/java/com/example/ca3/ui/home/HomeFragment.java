@@ -45,6 +45,14 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        //set welcome heading for current user
+        homeViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                binding.textViewWelcome.setText("Welcome, " + user.getName());
+            }
+        });
+
         // Setup Recent Memories RecyclerView
         setupRecentMemoriesRecyclerView();
 
@@ -110,7 +118,7 @@ public class HomeFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(entries, "Locations");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
-        dataSet.setColors(getResources().getIntArray(R.array.pie_chart_colors));
+        dataSet.setColors(getResources().getIntArray(R.array.chart_colors));
 
         PieData data = new PieData(dataSet);
         data.setValueTextSize(12f);
@@ -132,8 +140,15 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(getContext(), MapActivity.class);
             startActivity(intent);
         });
+    }
 
-        // You can add more quick actions here
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        homeViewModel.getCurrentUser();
+        homeViewModel.getRecentMemories();
+        homeViewModel.getMemoriesStatistics();
     }
 
     @Override

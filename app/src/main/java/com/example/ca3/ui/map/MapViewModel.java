@@ -74,21 +74,7 @@ public class MapViewModel extends AndroidViewModel {
         return null;
     }
 
-
-    // Method to create a new memory
-    public void createMemory(Memory memory, Callback.CreateMemoryCallback callback) {
-        FirebaseUtils.createMemory(memory, new Callback.CreateMemoryCallback() {
-            @Override
-            public void onSuccess() {
-                // Optionally, refresh the memories list
-                loadMemories();
-                callback.onSuccess();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                callback.onFailure(e);
-            }
-        });
+    public void refreshMemories() {
+        loadMemories();
     }
 }

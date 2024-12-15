@@ -7,6 +7,7 @@ import com.google.firebase.firestore.GeoPoint;
 public class Memory {
     private String id;
     private String photoUrl;
+    private String title;
     private String description;
     private GeoPoint location;
     private Timestamp  timestamp;
@@ -16,9 +17,10 @@ public class Memory {
     public Memory() {
     }
 
-    public Memory(String id, String photoUrl, String description, GeoPoint location, Timestamp timestamp, String weatherInfo, String userId) {
+    public Memory(String id,String photoUrl,String title, String description, GeoPoint location, Timestamp timestamp, String weatherInfo, String userId) {
         this.id = id;
         this.photoUrl = photoUrl;
+        this.title = title;
         this.description = description;
         this.location = location;
         this.timestamp = timestamp;
@@ -39,6 +41,12 @@ public class Memory {
     }
 
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) { this.title = title; }
 
     public String getDescription() {
         return description;

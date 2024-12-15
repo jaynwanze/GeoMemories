@@ -17,17 +17,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:paddingBottom="16dp">
-
-            <ImageView
-                android:id="@+id/imageViewProfile"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_profile_placeholder"
-                android:contentDescription="@string/profile_picture"
-                android:scaleType="centerCrop"
-                android:background="@drawable/circle_background" />
 
             <TextView
                 android:id="@+id/textViewWelcome"

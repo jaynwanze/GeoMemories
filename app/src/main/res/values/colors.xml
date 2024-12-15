@@ -16,4 +16,9 @@
     <color name="pie_color3">#FFCE56</color>
     <color name="pie_color4">#4BC0C0</color>
     <color name="pie_color5">#9966FF</color>
+    <color name="bar_color1">#784C4F</color>
+    <color name="bar_color2">#FF6334</color>
+    <color name="bar_color3">#36A2EB</color>
+    <color name="bar_color4">#FF5E56</color>
+    <color name="bar_color5">#009688</color>
 </resources>

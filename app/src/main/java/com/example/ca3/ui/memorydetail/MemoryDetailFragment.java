@@ -91,6 +91,7 @@ public class MemoryDetailFragment extends Fragment {
                             }
                         });
 
+                binding.textViewTitleContent.setText(memory.getTitle());
                 binding.textViewDescriptionContent.setText(memory.getDescription());
                 binding.textViewLocationContent.setText(getLocationName(new Geocoder(getContext()), memory.getLocation()) != null ? getLocationName(new Geocoder(getContext()), memory.getLocation()) : "Unavailable");
                 binding.textViewWeatherContent.setText(memory.getWeatherInfo() != null ? memory.getWeatherInfo() : "Unavailable");
@@ -107,7 +108,7 @@ public class MemoryDetailFragment extends Fragment {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
-                return address.getAdminArea();
+                return address.getAddressLine(0);
             }
         } catch (IOException e) {
             Log.e("HomeViewModel", "Geocoder IOException: ", e);

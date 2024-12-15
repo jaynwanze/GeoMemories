@@ -37,7 +37,7 @@ public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryView
     @Override
     public void onBindViewHolder(@NonNull MemoryViewHolder holder, int position) {
         Memory memory = memoryList.get(position);
-        holder.textDescription.setText(memory.getDescription());
+        holder.textTitle.setText(memory.getTitle());
         Glide.with(holder.imageView.getContext())
                 .load(memory.getPhotoUrl())
                 .placeholder(android.R.drawable.ic_menu_gallery)
@@ -56,12 +56,12 @@ public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryView
 
     class MemoryViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView textDescription;
+        TextView textTitle;
 
         MemoryViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageViewMemory);
-            textDescription = itemView.findViewById(R.id.textViewDescription);
+            textTitle = itemView.findViewById(R.id.textViewTitle);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();

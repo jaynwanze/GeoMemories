@@ -9,7 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.ca3.model.*;
+import com.example.ca3.ui.auth.AuthViewModel;
 import com.example.ca3.utils.*;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,15 +33,15 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<Map<String, Integer>> memoriesStatistics = new MutableLiveData<>();
     private final UserPreferencesManager userPreferencesManager;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<User> currentUser = new MutableLiveData<>();
 
     @Inject
     public HomeViewModel(@NonNull Application application) {
         super(application);
         userPreferencesManager = UserPreferencesManager.getInstance(application);
+        fetchCurrentUser();
         loadRecentMemories();
         loadMemoriesStatistics();
-
-
     }
 
     public LiveData<List<Memory>> getRecentMemories() {
@@ -53,6 +56,31 @@ public class HomeViewModel extends AndroidViewModel {
         return errorMessage;
     }
 
+    public LiveData<User> getCurrentUser() {
+        return currentUser;
+    }
+
+    public void fetchCurrentUser() {
+        String currentUserId = userPreferencesManager.getUserId();
+        if (currentUserId == null) {
+            errorMessage.postValue("User not logged in");
+            AuthViewModel authViewModel = new ViewModelProvider(this.getApplication()).get(AuthViewModel.class);
+            userPreferencesManager.clearUserId();
+            authViewModel.logout();
+        }
+
+        FirebaseUtils.getUser(currentUserId, new Callback.getUserCallback() {
+            @Override
+            public void onSuccess(User user) {
+                currentUser.postValue(user);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+               Log.d("HomeViewModel", "Error fetching current user: " + e.getMessage());
+            }
+        });
+    }
 
     private void loadRecentMemories() {
         String currentUserId = userPreferencesManager.getUserId();

@@ -37,7 +37,7 @@ public class RecentMemoriesAdapter extends RecyclerView.Adapter<RecentMemoriesAd
     @Override
     public void onBindViewHolder(@NonNull RecentMemoryViewHolder holder, int position) {
         Memory memory = memoryList.get(position);
-        holder.textDescription.setText(memory.getDescription());
+        holder.textTitle.setText(memory.getTitle());
         Glide.with(holder.imageView.getContext())
                 .load(memory.getPhotoUrl())
                 .placeholder(android.R.drawable.ic_menu_gallery)
@@ -56,12 +56,12 @@ public class RecentMemoriesAdapter extends RecyclerView.Adapter<RecentMemoriesAd
 
     class RecentMemoryViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView textDescription;
+        TextView textTitle;
 
         RecentMemoryViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageViewMemoryRecent);
-            textDescription = itemView.findViewById(R.id.textViewMemoryDescriptionRecent);
+            textTitle = itemView.findViewById(R.id.textViewMemoryTitleRecent);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();

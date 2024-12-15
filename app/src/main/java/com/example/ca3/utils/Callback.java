@@ -1,6 +1,7 @@
 package com.example.ca3.utils;
 
 import com.example.ca3.model.Memory;
+import com.example.ca3.model.User;
 
 import java.util.List;
 
@@ -32,6 +33,11 @@ public interface Callback {
 
     public interface UserCallback {
         void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface getUserCallback {
+        void onSuccess(User user);
         void onFailure(Exception e);
     }
 

@@ -54,6 +54,12 @@ public class GalleryFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        galleryViewModel.getMemories();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
