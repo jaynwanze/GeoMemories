@@ -1,9 +1,11 @@
 package com.example.ca3.ui.analytics;
 
 import android.app.Application;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.ca3.activity.LoginActivity;
 import com.example.ca3.model.Memory;
 import com.example.ca3.model.User;
 import com.example.ca3.ui.auth.AuthViewModel;
@@ -67,9 +70,14 @@ public class AnalyticsViewModel extends AndroidViewModel {
     private void fetchMemories() {
         String currentUserId = userPreferencesManager.getUserId();
         if (currentUserId == null) {
-            AuthViewModel authViewModel = new ViewModelProvider(this.getApplication()).get(AuthViewModel.class);
+            FirebaseAuth.getInstance().signOut();
             userPreferencesManager.clearUserId();
-            authViewModel.logout();
+            Toast.makeText(this.getApplication(), "User not logged in", Toast.LENGTH_SHORT).show();
+            Log.d("HomeViewModel", "User not logged in");
+            Intent intent = new Intent(this.getApplication(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            this.getApplication().startActivity(intent);
+            return;
         }
         FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryCallback() {
             @Override

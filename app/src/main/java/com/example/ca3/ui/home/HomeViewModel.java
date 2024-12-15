@@ -1,9 +1,11 @@
 package com.example.ca3.ui.home;
 
 import android.app.Application;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -11,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.ca3.activity.LoginActivity;
 import com.example.ca3.model.*;
 import com.example.ca3.ui.auth.AuthViewModel;
 import com.example.ca3.utils.*;
@@ -63,10 +66,14 @@ public class HomeViewModel extends AndroidViewModel {
     public void fetchCurrentUser() {
         String currentUserId = userPreferencesManager.getUserId();
         if (currentUserId == null) {
-            errorMessage.postValue("User not logged in");
-            AuthViewModel authViewModel = new ViewModelProvider(this.getApplication()).get(AuthViewModel.class);
+            Toast.makeText(this.getApplication(), "User not logged in", Toast.LENGTH_SHORT).show();
+            Log.d("HomeViewModel", "User not logged in");
+            FirebaseAuth.getInstance().signOut();
             userPreferencesManager.clearUserId();
-            authViewModel.logout();
+            Intent intent = new Intent(this.getApplication(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            this.getApplication().startActivity(intent);
+            return;
         }
 
         FirebaseUtils.getUser(currentUserId, new Callback.getUserCallback() {
@@ -85,7 +92,13 @@ public class HomeViewModel extends AndroidViewModel {
     private void loadRecentMemories() {
         String currentUserId = userPreferencesManager.getUserId();
         if (currentUserId == null) {
-            errorMessage.postValue("User not logged in");
+            FirebaseAuth.getInstance().signOut();
+            userPreferencesManager.clearUserId();
+            Toast.makeText(this.getApplication(), "User not logged in", Toast.LENGTH_SHORT).show();
+            Log.d("HomeViewModel", "User not logged in");
+            Intent intent = new Intent(this.getApplication(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            this.getApplication().startActivity(intent);
             return;
         }
         FirebaseUtils.getRecentMemories(10, currentUserId, new Callback.MemoryListCallback() {

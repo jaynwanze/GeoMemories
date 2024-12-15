@@ -18,6 +18,12 @@
         tools:layout="@layout/fragment_map" />
 
     <fragment
+        android:id="@+id/captureMemoryFragment"
+        android:name="com.example.ca3.ui.capturememory.CaptureMemoryFragment"
+        android:label="Capture"
+        tools:layout="@layout/fragment_capture_memory" />
+
+    <fragment
         android:id="@+id/galleryFragment"
         android:name="com.example.ca3.ui.gallery.GalleryFragment"
         android:label="@string/gallery"
@@ -28,11 +34,5 @@
         android:name="com.example.ca3.ui.analytics.AnalyticsFragment"
         android:label="Analytics"
         tools:layout="@layout/fragment_analytics" />
-
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.example.ca3.ui.settings.SettingsFragment"
-        android:label="@string/settings"
-        tools:layout="@layout/fragment_settings" />
 
 </navigation>

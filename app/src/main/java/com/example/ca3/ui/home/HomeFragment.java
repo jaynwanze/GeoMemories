@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.ca3.R;
 import com.example.ca3.activity.CaptureMemoryActivity;
 import com.example.ca3.activity.MapActivity;
@@ -57,19 +58,14 @@ public class HomeFragment extends Fragment {
         setupRecentMemoriesRecyclerView();
 
         // Observe Recent Memories
-        homeViewModel.getRecentMemories().observe(getViewLifecycleOwner(), memories -> {
-            if (memories == null)
-            {
-                //DISPLAY No Memories
+        observeRecentMemories();
 
-            }
-            else {
-                recentMemoriesAdapter.submitList(memories);
-            }
-        });
 
         // Observe Statistics Data
         homeViewModel.getMemoriesStatistics().observe(getViewLifecycleOwner(), stats -> {
+            if (stats == null || stats.isEmpty()) {
+                return;
+            }
             setupPieChart(stats);
         });
         // Setup Quick Actions Click Listeners
@@ -84,6 +80,21 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void observeRecentMemories() {
+        homeViewModel.getRecentMemories().observe(getViewLifecycleOwner(), memories -> {
+            if (memories != null && !memories.isEmpty()) {
+                // Memories list is not empty
+                binding.recyclerViewRecentMemories.setVisibility(View.VISIBLE);
+                binding.textViewRecentMemoriesEmpty.setVisibility(View.GONE);
+                recentMemoriesAdapter.submitList(memories);
+            } else {
+                // Memories list is empty
+                binding.recyclerViewRecentMemories.setVisibility(View.GONE);
+                binding.textViewRecentMemoriesEmpty.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void setupRecentMemoriesRecyclerView() {
@@ -118,7 +129,7 @@ public class HomeFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(entries, "Locations");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
-        dataSet.setColors(getResources().getIntArray(R.array.chart_colors));
+        dataSet.setColors(getResources().getIntArray(R.array.chart_colors_2));
 
         PieData data = new PieData(dataSet);
         data.setValueTextSize(12f);
@@ -130,18 +141,26 @@ public class HomeFragment extends Fragment {
 
     private void setupQuickActions() {
         // Add Memory Card Click
+        Glide.with(binding.imageViewAddMemory.getContext()).load(
+                        android.R.drawable.ic_menu_gallery)
+                .into(binding.imageViewAddMemory);
+
+
         binding.cardAddMemory.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), CaptureMemoryActivity.class);
             startActivity(intent);
         });
 
         // View Map Card Click
+        Glide.with(binding.imageViewMap.getContext()).load(
+                android.R.drawable.ic_menu_mapmode)
+                .into(binding.imageViewMap);
+
         binding.cardViewMap.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), MapActivity.class);
             startActivity(intent);
         });
     }
-
 
     @Override
     public void onResume() {

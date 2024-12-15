@@ -26,8 +26,6 @@ public class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
     private SettingsViewModel settingsViewModel;
-    private AuthViewModel authViewModel;
-
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -37,7 +35,6 @@ public class SettingsFragment extends Fragment {
 
         // Initialize ViewModels
         settingsViewModel = new ViewModelProvider(this).get(SettingsViewModel.class);
-        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         // Setup Map Type Spinner
         ArrayAdapter<CharSequence> mapTypeAdapter = ArrayAdapter.createFromResource(getContext(),
@@ -85,10 +82,11 @@ public class SettingsFragment extends Fragment {
     }
 
     private void logoutUser() {
-        authViewModel.logout();
         Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+        settingsViewModel.logout();
         // Navigate to LoginActivity
         Intent intent = new Intent(getContext(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         getActivity().finish();
     }

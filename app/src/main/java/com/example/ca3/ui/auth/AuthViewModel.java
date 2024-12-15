@@ -1,6 +1,9 @@
 package com.example.ca3.ui.auth;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.app.Application;
+import android.content.Intent;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.ca3.activity.LoginActivity;
 import com.example.ca3.model.User;
 import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;

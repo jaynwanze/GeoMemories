@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer-array name="chart_colors">
+    <integer-array name="chart_colors_1">
         <item>@color/pie_color1</item>
         <item>@color/pie_color4</item>
         <item>@color/pie_color2</item>
@@ -12,5 +12,20 @@
         <item>@color/bar_color3</item>
         <item>@color/bar_color4</item>
         <item>@color/bar_color5</item>
+    </integer-array>
+
+    <integer-array name="chart_colors_2">
+        <item>@color/pie_color4</item>
+        <item>@color/red</item>
+        <item>@color/pie_color5</item>
+        <item>@color/pie_color2</item>
+        <item>@color/bar_color4</item>
+        <item>@color/bar_color1</item>
+        <item>@color/bar_color2</item>
+        <item>@color/bar_color3</item>
+        <item>@color/pie_color3</item>
+        <item>@color/bar_color5</item>
+        <item>@color/pie_color1</item>
+
     </integer-array>
 </resources>

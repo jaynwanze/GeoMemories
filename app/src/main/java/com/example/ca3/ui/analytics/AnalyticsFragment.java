@@ -32,6 +32,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -48,11 +49,19 @@ public class AnalyticsFragment extends Fragment {
 
         // Observe data and update chart
         analyticsViewModel = new ViewModelProvider(this).get(AnalyticsViewModel.class);
-        analyticsViewModel.getMemoriesPerMonth().observe(getViewLifecycleOwner() , memories -> {
+        analyticsViewModel.getMemoriesPerMonth().observe(getViewLifecycleOwner(), memories -> {
+            if (memories == null || memories.isEmpty()) {
+                return;
+            }
             setupPieChartMemoriesByMonth(memories);
             setupLineChartTotalMemoriesOverTime(memories);
         });
-        analyticsViewModel.getMemoriesPerLocation().observe(getViewLifecycleOwner(), this::setupPieChartMemoriesByLocation);
+        analyticsViewModel.getMemoriesPerLocation().observe(getViewLifecycleOwner(), memories -> {
+            if (memories == null || memories.isEmpty()) {
+                return;
+            }
+            setupPieChartMemoriesByLocation(memories);
+        });
 
         return root;
     }
@@ -75,7 +84,7 @@ public class AnalyticsFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(entries, "[Months]");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
-        dataSet.setColors(getResources().getIntArray(R.array.chart_colors));
+        dataSet.setColors(getResources().getIntArray(R.array.chart_colors_1));
 
         PieData pieData = new PieData(dataSet);
         pieData.setValueTextSize(12f);
@@ -171,7 +180,7 @@ public class AnalyticsFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(entries, "[Locations]");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
-        dataSet.setColors(getResources().getIntArray(R.array.chart_colors));
+        dataSet.setColors(getResources().getIntArray(R.array.chart_colors_2));
 
         PieData data = new PieData(dataSet);
         data.setValueTextSize(12f);

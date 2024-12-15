@@ -10,6 +10,10 @@
         android:id="@+id/mapFragment"
         android:icon="@android:drawable/ic_menu_mapmode"
         android:title="@string/map" />
+    <item
+        android:id="@+id/captureMemoryFragment"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="Capture" />
 
     <item
         android:id="@+id/galleryFragment"
@@ -19,10 +23,5 @@
         android:id="@+id/analyticsFragment"
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="@string/title_analytics" />
-
-    <item
-        android:id="@+id/settingsFragment"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:title="@string/settings" />
 
 </menu>

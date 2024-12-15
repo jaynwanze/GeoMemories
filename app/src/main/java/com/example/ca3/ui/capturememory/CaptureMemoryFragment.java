@@ -16,6 +16,7 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.ca3.activity.MainActivity;
 import com.example.ca3.databinding.FragmentCaptureMemoryBinding;
 import com.example.ca3.model.Memory;
@@ -47,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Optional;
 import java.util.UUID;
 
 @AndroidEntryPoint
@@ -82,8 +84,14 @@ public class CaptureMemoryFragment extends Fragment {
         if (!allPermissionsGranted()) {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
-
-        // Capture Photo Button
+        // Capture Photo
+       /* Find nice place holder or show text for no image
+        Glide.with(binding.imageView.getContext()).load(Optional.ofNullable(null))
+                .placeholder(
+                        android.R.drawable.ic_menu_mapmode)
+                .into(binding.imageView);*/
+        openCamera();
+        // set to see full view when clicked
         binding.buttonCapture.setOnClickListener(v -> openCamera());
 
         // Save Memory Button
@@ -290,6 +298,8 @@ public class CaptureMemoryFragment extends Fragment {
             }
         }
     }
+
+
 
     @Override
     public void onDestroyView() {

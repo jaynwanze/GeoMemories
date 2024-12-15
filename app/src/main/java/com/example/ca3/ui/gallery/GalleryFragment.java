@@ -16,6 +16,7 @@ import com.example.ca3.adapter.*;
 import com.example.ca3.databinding.FragmentGalleryBinding;
 import com.example.ca3.model.Memory;
 import com.example.ca3.ui.gallery.GalleryViewModel;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -46,11 +47,24 @@ public class GalleryFragment extends Fragment {
         });
 
         // Observe memories
-        galleryViewModel.getMemories().observe(getViewLifecycleOwner(), memories -> {
-            memoryAdapter.submitList(memories);
-        });
+        observeMemories();
 
         return root;
+    }
+
+    private void observeMemories() {
+        galleryViewModel.getMemories().observe(getViewLifecycleOwner(), memories -> {
+            if (memories != null && !memories.isEmpty()) {
+                // Memories list is not empty
+                binding.recyclerView.setVisibility(View.VISIBLE);
+                binding.textViewGalleryEmpty.setVisibility(View.GONE);
+                memoryAdapter.submitList(memories);
+            } else {
+                // Memories list is empty
+                binding.recyclerView.setVisibility(View.GONE);
+                binding.textViewGalleryEmpty.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
