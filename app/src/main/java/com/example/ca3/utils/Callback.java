@@ -1,6 +1,7 @@
 package com.example.ca3.utils;
 
 import com.example.ca3.model.Memory;
+import com.example.ca3.model.PlacesResponse;
 import com.example.ca3.model.User;
 
 import java.util.List;
@@ -41,7 +42,10 @@ public interface Callback {
         void onFailure(Exception e);
     }
 
-
+    public interface PlacesCallback {
+        void onSuccess(List<PlacesResponse.Place> places);
+        void onFailure(Throwable t);
+    }
     public interface CreateMemoryCallback {
         void onSuccess();
         void onFailure(Exception e);

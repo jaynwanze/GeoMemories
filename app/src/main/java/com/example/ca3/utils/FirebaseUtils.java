@@ -87,11 +87,8 @@ public class FirebaseUtils {
 
     public static void saveMemory(Memory memory, Callback.MemorySaveCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Generate a unique memory ID
-        String memoryId = db.collection("memories").document().getId();
-        memory.setId(memoryId);
         db.collection("memories")
-                .document(memoryId)
+                .document(memory.getId())
                 .set(memory)
                 .addOnSuccessListener(aVoid -> {
                     callback.onSuccess();
@@ -105,10 +102,14 @@ public class FirebaseUtils {
             callback.onFailure(new Exception("Photo URI is null"));
             return;
         }
+        if (memoryId == null) {
+            callback.onFailure(new Exception("Memory ID is null"));
+            return;
+        }
+
         // Construct the storage path: memories/{uid}/{memoryId}
         String storagePath = "memories/" + userId + "/" + memoryId;
         StorageReference photoRef = storage.getReference().child(storagePath);
-
         photoRef.putFile(photoUri)
                 .addOnSuccessListener(taskSnapshot -> photoRef.getDownloadUrl()
                         .addOnSuccessListener(uri -> callback.onSuccess(uri.toString()))

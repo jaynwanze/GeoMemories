@@ -160,7 +160,6 @@ public class CaptureMemoryFragment extends Fragment {
     }
 
     private void saveMemory() {
-
         String title = binding.editTextTitle.getText().toString().trim();
         if (title.isEmpty()) {
             binding.editTextTitle.setError("Title is required.");
@@ -178,7 +177,6 @@ public class CaptureMemoryFragment extends Fragment {
             return;
         }
 
-        // Optionally, verify that the file exists
         if (!fileExists(photoUri)) {
             Toast.makeText(getContext(), "Photo file does not exist.", Toast.LENGTH_SHORT).show();
             return;
@@ -197,20 +195,31 @@ public class CaptureMemoryFragment extends Fragment {
         double latitude = currentLocation.getLatitude();
         double longitude = currentLocation.getLongitude();
         captureMemoryViewModel.fetchCurrentWeather(latitude, longitude);
+        captureMemoryViewModel.fetchNearbyPlaces(latitude, longitude);
         //Get current weather info and update memory
+        Memory memory = new Memory();
         captureMemoryViewModel.getCurrentWeather().observe(getViewLifecycleOwner(), weatherInfo -> {
                 // Create Memory Object
-                Memory memory = new Memory();
-                memory.setTitle(title);
-                memory.setDescription(description);
+                memory.setTitle(title.trim());
+                memory.setDescription(description.trim());
                 memory.setLocation(new com.google.firebase.firestore.GeoPoint(latitude, longitude));
                 memory.setTimestamp(Timestamp.now());
                 memory.setUserId(currentUserId);
                 memory.setWeatherInfo(weatherInfo);
+                // Fetch nearby places
+             captureMemoryViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), places -> {
+                if (places != null) {
+                    memory.setPlaces(places);
+                    Log.d("SaveMemory", "Nearby places set: " + places.size());
+                }
+                else {
+                    Log.d("SaveMemory", "Nearby places not set.");
+                }
+                captureMemoryViewModel.getNearbyPlaces().removeObservers(getViewLifecycleOwner());
+            });
 
                 // Process image and upload
-                compressAndUploadImage(photoUri, currentUserId, memory);
-
+                compressAndUploadImage(currentUserId, memory);
                 // Stop observing after saving
                 captureMemoryViewModel.getCurrentWeather().removeObservers(getViewLifecycleOwner());
         });
@@ -219,10 +228,9 @@ public class CaptureMemoryFragment extends Fragment {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.putExtra("PROCESSING_MEMORY", true);
         startActivity(intent);
-
     }
 
-    private void compressAndUploadImage(Uri imageUri, String uid, Memory memory) {
+    private void compressAndUploadImage(String uid, Memory memory) {
         File imageFile = new File(currentPhotoPath);
         if (!imageFile.exists() || !imageFile.isFile()) {
             Toast.makeText(getContext(), "Invalid image file.", Toast.LENGTH_SHORT).show();

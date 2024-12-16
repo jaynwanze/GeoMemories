@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.ca3.R;
 import com.example.ca3.databinding.FragmentMemoryDetailBinding;
+import com.example.ca3.model.Place;
 import com.example.ca3.ui.fullscreenimage.FullScreenImageFragment;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -91,10 +92,15 @@ public class MemoryDetailFragment extends Fragment {
                             }
                         });
 
-                binding.textViewTitleContent.setText(memory.getTitle());
-                binding.textViewDescriptionContent.setText(memory.getDescription());
+                binding.textViewTitleContent.setText(memory.getTitle() != null ? memory.getTitle() : "Unavailable");
+                binding.textViewDescriptionContent.setText(memory.getDescription() != null ? memory.getDescription() : "Unavailable");
                 binding.textViewLocationContent.setText(getLocationName(new Geocoder(getContext()), memory.getLocation()) != null ? getLocationName(new Geocoder(getContext()), memory.getLocation()) : "Unavailable");
                 binding.textViewWeatherContent.setText(memory.getWeatherInfo() != null ? memory.getWeatherInfo() : "Unavailable");
+                StringBuilder places = new StringBuilder();
+                for (Place place : memory.getPlaces()) {
+                    places.append("Name: ").append(place.getName()).append("\nVicinity: ").append(place.getVicinity()).append("\n\n");
+                }
+                binding.textViewNearbyPlacesContent.setText(memory.getPlaces() != null ? places : "Unavailable");
             }
         });
 

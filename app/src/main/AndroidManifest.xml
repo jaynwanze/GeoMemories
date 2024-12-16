@@ -29,6 +29,8 @@
             android:value="${MAPS_API_KEY}" />
         <meta-data android:name="com.google.android.geo.OPEN_WEATHER_API"
             android:value="${OPEN_WEATHER_API}" />
+        <meta-data android:name="com.google.android.geo.PLACES_API_KEY"
+            android:value="${PLACES_API_KEY}" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

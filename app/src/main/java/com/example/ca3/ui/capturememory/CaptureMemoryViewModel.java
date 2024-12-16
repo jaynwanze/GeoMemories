@@ -12,13 +12,22 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.ca3.model.Memory;
+import com.example.ca3.model.Place;
+import com.example.ca3.model.PlacesResponse;
 import com.example.ca3.model.WeatherResponse;
 import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;
 import com.example.ca3.utils.LocationUtils;
+import com.example.ca3.utils.PlacesUtils;
 import com.example.ca3.utils.WeatherUtils;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+
 import javax.inject.Inject;
 
 @HiltViewModel
@@ -26,13 +35,16 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
 
     private final LocationUtils locationUtils;
     private final WeatherUtils weatherutils;
+    private final PlacesUtils placesUtils;
     private final MutableLiveData<String> currentWeather = new MutableLiveData<>();
+    private final MutableLiveData<List<Place>> nearbyPlaces = new MutableLiveData<>();
 
     @Inject
     public CaptureMemoryViewModel(@NonNull Application application) {
         super(application);
         this.locationUtils = LocationUtils.getInstance(application);
         this.weatherutils = WeatherUtils.getInstance(application);
+        this.placesUtils = PlacesUtils.getInstance(application);
         fetchCurrentLocation();
     }
 
@@ -43,8 +55,13 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
     public void fetchCurrentLocation() {
         locationUtils.getCurrentLocation();
     }
+
     public MutableLiveData<String> getCurrentWeather() {
         return currentWeather;
+    }
+
+    public MutableLiveData<List<Place>> getNearbyPlaces() {
+        return nearbyPlaces;
     }
 
     public void fetchCurrentWeather(double lat, double lon) {
@@ -65,6 +82,7 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
                     currentWeather.setValue(null);
                 }
             }
+
             @Override
             public void onFailure(Throwable t) {
                 Log.e(TAG, "Failed to fetch weather data.", t);
@@ -73,10 +91,50 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
         });
     }
 
+    public void fetchNearbyPlaces(double lat, double lon) {
+        placesUtils.getNearbyPlaces(
+                lat,
+                lon,
+                5000,
+                "tourist_attraction",
+                new Callback.PlacesCallback() {
+
+                    @Override
+                    public void onSuccess(List<PlacesResponse.Place> places) {
+                        // Convert PlacesResponse.Place to Memory.Place
+                        List<Place> nearbyPlacesList = new ArrayList<>();
+                        for (PlacesResponse.Place place : places) {
+                            Place memoryPlace = new Place(
+                                    place.getName(),
+                                    place.getVicinity(),
+                                    place.getGeometry(),
+                                    place.getTypes()
+                            );
+                            nearbyPlacesList.add(memoryPlace);
+                        }
+                        nearbyPlaces.setValue(nearbyPlacesList);
+                        Log.d("CaptureMemoryViewModel", "Nearby places fetched and set.");
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        // Handle failure to fetch nearby places
+                        Log.e("GalleryFragment", "Failed to fetch nearby places", t);
+                        nearbyPlaces.setValue(null);
+                    }
+                }
+        );
+    }
+
     public void saveMemory(String uid, Memory memory, Uri photoUri, Callback.SaveCallback callback) {
-        Log.d("CaptureMemoryViewModel", "Saving memory with photo URI: " + photoUri);
+        // Save give memory an id
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("memories").document();
+        String memoryId = docRef.getId();
+        memory.setId(memoryId);
+
         // Upload photo to Firebase Storage
-        FirebaseUtils.uploadPhoto(uid, memory.getId() ,photoUri, new Callback.PhotoUploadCallback() {
+        FirebaseUtils.uploadPhoto(uid, memory.getId(), photoUri, new Callback.PhotoUploadCallback() {
             @Override
             public void onSuccess(String downloadUrl) {
                 memory.setPhotoUrl(downloadUrl);
@@ -84,11 +142,13 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
                     @Override
                     public void onSuccess() {
                         callback.onSuccess();
+                        Log.d(TAG, "Memory saved successfully.");
                     }
 
                     @Override
                     public void onFailure(Exception e) {
                         callback.onFailure(e);
+                        Log.e(TAG, "Failed to save memory.", e);
                     }
                 });
             }

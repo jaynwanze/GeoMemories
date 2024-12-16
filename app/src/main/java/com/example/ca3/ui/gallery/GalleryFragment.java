@@ -82,15 +82,15 @@ public class GalleryFragment extends Fragment {
 
     private void observeMemories() {
         galleryViewModel.getMemories().observe(getViewLifecycleOwner(), memories -> {
-            if (memories != null && !memories.isEmpty()) {
+            if (memories == null || memories.isEmpty()) {
+                // Memories list is empty
+                binding.recyclerView.setVisibility(View.GONE);
+                binding.textViewGalleryEmpty.setVisibility(View.VISIBLE);
+            } else {
                 // Memories list is not empty
                 binding.recyclerView.setVisibility(View.VISIBLE);
                 binding.textViewGalleryEmpty.setVisibility(View.GONE);
                 memoryAdapter.submitList(memories);
-            } else {
-                // Memories list is empty
-                binding.recyclerView.setVisibility(View.GONE);
-                binding.textViewGalleryEmpty.setVisibility(View.VISIBLE);
             }
         });
     }

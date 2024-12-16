@@ -4,6 +4,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.List;
+
 public class Memory {
     private String id;
     private String photoUrl;
@@ -12,12 +14,13 @@ public class Memory {
     private GeoPoint location;
     private Timestamp  timestamp;
     private String weatherInfo;
+    private List<Place> places;
     private String userId;
 
     public Memory() {
     }
 
-    public Memory(String id,String photoUrl,String title, String description, GeoPoint location, Timestamp timestamp, String weatherInfo, String userId) {
+    public Memory(String id,String photoUrl,String title, String description, GeoPoint location, Timestamp timestamp, String weatherInfo,List<Place> places, String userId) {
         this.id = id;
         this.photoUrl = photoUrl;
         this.title = title;
@@ -26,6 +29,7 @@ public class Memory {
         this.timestamp = timestamp;
         this.weatherInfo = weatherInfo;
         this.userId = userId;
+        this.places = places;
     }
 
     // Getters and Setters
@@ -71,6 +75,14 @@ public class Memory {
     }
 
     public void setWeatherInfo(String weatherInfo) { this.weatherInfo = weatherInfo; }
+
+    public List<Place> getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(List<Place> places) {
+        this.places = places;
+    }
 
     public String getUserId() {
         return userId;
