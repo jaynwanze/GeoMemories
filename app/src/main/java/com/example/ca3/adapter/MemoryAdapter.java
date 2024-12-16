@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.ca3.R;
 import com.example.ca3.model.Memory;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryViewHolder> {
+public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryViewHolder> implements android.widget.Filterable {
 
     private List<Memory> memoryList = new ArrayList<>();
+    private List<Memory> memoryListFull = new ArrayList<>();
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -50,9 +52,43 @@ public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryView
     }
 
     public void submitList(List<Memory> memories) {
-        memoryList = memories;
+        memoryList = new ArrayList<>(memories);
+        memoryListFull = new ArrayList<>(memories);
         notifyDataSetChanged();
     }
+
+    @Override
+    public android.widget.Filter getFilter() {
+        return memoryFilter;
+    }
+
+    private android.widget.Filter memoryFilter = new android.widget.Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Memory> filteredList = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(memoryListFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (Memory memory : memoryListFull) {
+                    if (memory.getTitle().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(memory);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            memoryList.clear();
+            memoryList.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
 
     class MemoryViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;

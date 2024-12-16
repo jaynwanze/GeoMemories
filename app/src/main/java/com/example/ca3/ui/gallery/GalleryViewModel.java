@@ -44,4 +44,8 @@ public class GalleryViewModel extends AndroidViewModel {
             }
         });
     }
+
+    public void refreshData() {
+        loadMemories();
+    }
 }

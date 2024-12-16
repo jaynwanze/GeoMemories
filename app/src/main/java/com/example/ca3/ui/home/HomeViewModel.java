@@ -63,7 +63,7 @@ public class HomeViewModel extends AndroidViewModel {
         return currentUser;
     }
 
-    public void fetchCurrentUser() {
+    private void fetchCurrentUser() {
         String currentUserId = userPreferencesManager.getUserId();
         if (currentUserId == null) {
             Toast.makeText(this.getApplication(), "User not logged in", Toast.LENGTH_SHORT).show();
@@ -151,6 +151,11 @@ public class HomeViewModel extends AndroidViewModel {
                 errorMessage.postValue("Failed to load memories statistics: " + e.getMessage());
             }
         });
+    }
+
+    public void refreshData() {
+        loadRecentMemories();
+        loadMemoriesStatistics();
     }
 
     private String getLocationName(Geocoder geocoder, GeoPoint geoPoint) {

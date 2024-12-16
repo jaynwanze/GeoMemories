@@ -5,17 +5,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.ca3.activity.MemoryDetailActivity;
-import com.example.ca3.adapter.*;
+import com.example.ca3.adapter.MemoryAdapter;
 import com.example.ca3.databinding.FragmentGalleryBinding;
-import com.example.ca3.model.Memory;
-import com.example.ca3.ui.gallery.GalleryViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -46,11 +46,39 @@ public class GalleryFragment extends Fragment {
             startActivity(intent);
         });
 
+        // Setup SearchView
+        setupSearchView();
+
         // Observe memories
         observeMemories();
 
         return root;
     }
+
+    private void setupSearchView() {
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Filter when the user submits the query
+                memoryAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter in real-time as the user types
+                memoryAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+        binding.searchView.setOnCloseListener(() -> {
+            // Reset the adapter to show all items when the search is closed
+            memoryAdapter.getFilter().filter("");
+            return false;
+        });
+    }
+
 
     private void observeMemories() {
         galleryViewModel.getMemories().observe(getViewLifecycleOwner(), memories -> {
@@ -70,7 +98,9 @@ public class GalleryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        galleryViewModel.getMemories();
+        //refresh the memories list
+        galleryViewModel.refreshData();
+        observeMemories();
     }
 
     @Override

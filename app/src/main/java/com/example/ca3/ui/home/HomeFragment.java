@@ -12,10 +12,7 @@ import com.example.ca3.R;
 import com.example.ca3.activity.CaptureMemoryActivity;
 import com.example.ca3.activity.MapActivity;
 import com.example.ca3.activity.MemoryDetailActivity;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -47,12 +44,8 @@ public class HomeFragment extends Fragment {
 
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
-        //set welcome heading for current user
-        homeViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
-            if (user != null) {
-                binding.textViewWelcome.setText("Welcome, " + user.getName());
-            }
-        });
+        // Observe Current User
+        observeCurrentUser();
 
         // Setup Recent Memories RecyclerView
         setupRecentMemoriesRecyclerView();
@@ -60,14 +53,9 @@ public class HomeFragment extends Fragment {
         // Observe Recent Memories
         observeRecentMemories();
 
+        // Setup Stats Chart
+        observeStatisticsData();
 
-        // Observe Statistics Data
-        homeViewModel.getMemoriesStatistics().observe(getViewLifecycleOwner(), stats -> {
-            if (stats == null || stats.isEmpty()) {
-                return;
-            }
-            setupPieChart(stats);
-        });
         // Setup Quick Actions Click Listeners
         setupQuickActions();
 
@@ -80,6 +68,26 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public void observeCurrentUser() {
+        // Observe Current User Data
+        //set welcome heading for current user
+        homeViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                binding.textViewWelcome.setText("Welcome, " + user.getName());
+            }
+        });
+    }
+
+    public void observeStatisticsData() {
+        // Observe Statistics Data
+        homeViewModel.getMemoriesStatistics().observe(getViewLifecycleOwner(), stats -> {
+            if (stats == null || stats.isEmpty()) {
+                return;
+            }
+            setupPieChart(stats);
+        });
     }
 
     private void observeRecentMemories() {
@@ -165,9 +173,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        homeViewModel.getCurrentUser();
-        homeViewModel.getRecentMemories();
-        homeViewModel.getMemoriesStatistics();
+        // Refresh data when the fragment is resumed
+        homeViewModel.refreshData();
+        observeRecentMemories();
+        observeStatisticsData();
     }
 
     @Override

@@ -11,12 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ca3.activity.LoginActivity;
 import com.example.ca3.model.Memory;
-import com.example.ca3.model.User;
-import com.example.ca3.ui.auth.AuthViewModel;
 import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;
 import com.example.ca3.utils.UserPreferencesManager;
@@ -65,6 +62,12 @@ public class AnalyticsViewModel extends AndroidViewModel {
 
     public LiveData<List<Memory>> getMemories() {
         return memories;
+    }
+
+    public void refreshData() {
+        fetchMemories();
+        memories.observeForever(this::loadMemoriesStatistics);
+        memories.observeForever(this::loadMemoriesByLocationStatistics);
     }
 
     private void fetchMemories() {

@@ -1,6 +1,5 @@
 package com.example.ca3.ui.analytics;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ca3.R;
 import com.example.ca3.databinding.FragmentAnalyticsBinding;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -49,6 +44,13 @@ public class AnalyticsFragment extends Fragment {
 
         // Observe data and update chart
         analyticsViewModel = new ViewModelProvider(this).get(AnalyticsViewModel.class);
+        observeMemoriesPerMonth();
+        observeMemoriesByLocation();
+
+        return root;
+    }
+
+    private void observeMemoriesPerMonth() {
         analyticsViewModel.getMemoriesPerMonth().observe(getViewLifecycleOwner(), memories -> {
             if (memories == null || memories.isEmpty()) {
                 return;
@@ -56,14 +58,15 @@ public class AnalyticsFragment extends Fragment {
             setupPieChartMemoriesByMonth(memories);
             setupLineChartTotalMemoriesOverTime(memories);
         });
+    }
+
+    private void observeMemoriesByLocation() {
         analyticsViewModel.getMemoriesPerLocation().observe(getViewLifecycleOwner(), memories -> {
             if (memories == null || memories.isEmpty()) {
                 return;
             }
             setupPieChartMemoriesByLocation(memories);
         });
-
-        return root;
     }
 
     private void setupPieChartMemoriesByMonth(Map<String, Integer> data) {
@@ -188,6 +191,14 @@ public class AnalyticsFragment extends Fragment {
 
         pieChart.setData(data);
         pieChart.invalidate(); // Refresh chart
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        analyticsViewModel.refreshData();
+        observeMemoriesPerMonth();
+        observeMemoriesByLocation();
     }
 
     @Override

@@ -38,8 +38,6 @@ public class WeatherUtils {
         return instance;
     }
 
-
-
     public interface WeatherCallback {
         void onSuccess(WeatherResponse weatherResponse);
         void onFailure(Throwable t);
