@@ -73,12 +73,7 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
         });
     }
 
-    public interface SaveCallback {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    public void saveMemory(String uid, Memory memory, Uri photoUri, SaveCallback callback) {
+    public void saveMemory(String uid, Memory memory, Uri photoUri, Callback.SaveCallback callback) {
         Log.d("CaptureMemoryViewModel", "Saving memory with photo URI: " + photoUri);
         // Upload photo to Firebase Storage
         FirebaseUtils.uploadPhoto(uid, memory.getId() ,photoUri, new Callback.PhotoUploadCallback() {

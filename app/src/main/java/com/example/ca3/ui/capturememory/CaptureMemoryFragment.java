@@ -21,6 +21,7 @@ import com.example.ca3.activity.MainActivity;
 import com.example.ca3.databinding.FragmentCaptureMemoryBinding;
 import com.example.ca3.model.Memory;
 import com.example.ca3.model.User;
+import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.UserPreferencesManager;
 import com.example.ca3.utils.WeatherUtils;
 import com.google.firebase.Timestamp;
@@ -239,7 +240,7 @@ public class CaptureMemoryFragment extends Fragment {
                 .subscribe(file -> {
                     Uri compressedUri = Uri.fromFile(file);
                     // Handle photo upload and memory saving
-                    captureMemoryViewModel.saveMemory( uid, memory, compressedUri, new CaptureMemoryViewModel.SaveCallback() {
+                    captureMemoryViewModel.saveMemory( uid, memory, compressedUri, new Callback.SaveCallback() {
                         @Override
                         public void onSuccess() {
                             // Clear inputs

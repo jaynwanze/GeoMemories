@@ -121,7 +121,7 @@ public class HomeViewModel extends AndroidViewModel {
             errorMessage.postValue("User not logged in");
             return;
         }
-        FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryCallback() {
+        FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryListCallback() {
             @Override
             public void onSuccess(List<Memory> memoryList) {
                 Map<String, Integer> stats = new HashMap<>();

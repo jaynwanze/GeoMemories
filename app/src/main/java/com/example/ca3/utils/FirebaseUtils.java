@@ -54,7 +54,7 @@ public class FirebaseUtils {
     }
 
 
-    public static void getAllMemories(String userId, Callback.MemoryCallback callback) {
+    public static void getAllMemories(String userId, Callback.MemoryListCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
                 .whereEqualTo("userId", userId) // Filter by userId

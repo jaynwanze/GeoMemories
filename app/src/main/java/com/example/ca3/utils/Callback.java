@@ -6,11 +6,6 @@ import com.example.ca3.model.User;
 import java.util.List;
 
 public interface Callback {
-    public interface MemoryCallback {
-        void onSuccess(List<Memory> memoryList);
-        void onFailure(Exception e);
-    }
-
     public interface MemoryListCallback {
         void onSuccess(List<Memory> memoryList);
         void onFailure(Exception e);
@@ -40,6 +35,12 @@ public interface Callback {
         void onSuccess(User user);
         void onFailure(Exception e);
     }
+
+    public interface SaveCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
 
     public interface CreateMemoryCallback {
         void onSuccess();

@@ -32,7 +32,7 @@ public class GalleryViewModel extends AndroidViewModel {
     private void loadMemories() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String currentUserId = auth.getCurrentUser().getUid();
-        FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryCallback() {
+        FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryListCallback() {
             @Override
             public void onSuccess(List<Memory> memoryList) {
                 memories.postValue(memoryList);

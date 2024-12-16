@@ -49,7 +49,7 @@ public class MapViewModel extends AndroidViewModel {
 
     private void loadMemories() {
         String currentUserId = userPreferencesManager.getUserId();
-        FirebaseUtils.getAllMemories(currentUserId,new Callback.MemoryCallback() {
+        FirebaseUtils.getAllMemories(currentUserId,new Callback.MemoryListCallback() {
             @Override
             public void onSuccess(List<Memory> memoryList) {
                 memories.postValue(memoryList);

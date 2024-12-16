@@ -82,7 +82,7 @@ public class AnalyticsViewModel extends AndroidViewModel {
             this.getApplication().startActivity(intent);
             return;
         }
-        FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryCallback() {
+        FirebaseUtils.getAllMemories(currentUserId, new Callback.MemoryListCallback() {
             @Override
             public void onSuccess(List<Memory> memoryList) {
                 memories.postValue(memoryList);
