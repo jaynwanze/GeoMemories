@@ -20,6 +20,7 @@ import com.example.ca3.R;
 import com.example.ca3.databinding.FragmentMemoryDetailBinding;
 import com.example.ca3.model.Place;
 import com.example.ca3.ui.fullscreenimage.FullScreenImageFragment;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.IOException;
@@ -94,7 +95,10 @@ public class MemoryDetailFragment extends Fragment {
 
                 binding.textViewTitleContent.setText(memory.getTitle() != null ? memory.getTitle() : "Unavailable");
                 binding.textViewDescriptionContent.setText(memory.getDescription() != null ? memory.getDescription() : "Unavailable");
-                binding.textViewLocationContent.setText(getLocationName(new Geocoder(getContext()), memory.getLocation()) != null ? getLocationName(new Geocoder(getContext()), memory.getLocation()) : "Unavailable");
+                String locationName = getLocationName(new Geocoder(getContext()), memory.getLocation());
+                binding.textViewLocationContent.setText(locationName != null ? locationName : "Unavailable");
+                Timestamp timestamp = memory.getTimestamp();
+                binding.textViewDateTimeContent.setText(timestamp != null ? timestamp.toDate().toString() : "Unavailable");
                 binding.textViewWeatherContent.setText(memory.getWeatherInfo() != null ? memory.getWeatherInfo() : "Unavailable");
                 StringBuilder places = new StringBuilder();
                 for (Place place : memory.getPlaces()) {
