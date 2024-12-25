@@ -13,10 +13,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.ca3.R;
+import com.example.ca3.adapter.NearbyPlacesAdapter;
 import com.example.ca3.databinding.FragmentMemoryDetailBinding;
 import com.example.ca3.model.Place;
 import com.example.ca3.ui.fullscreenimage.FullScreenImageFragment;
@@ -24,6 +27,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -35,6 +39,8 @@ public class MemoryDetailFragment extends Fragment {
     private FragmentMemoryDetailBinding binding;
     private MemoryDetailViewModel memoryDetailViewModel;
     private static final String ARG_MEMORY_ID = "memory_id";
+    private NearbyPlacesAdapter nearbyPlacesAdapter;
+
 
     public static MemoryDetailFragment newInstance(String memoryId) {
         MemoryDetailFragment fragment = new MemoryDetailFragment();
@@ -55,6 +61,12 @@ public class MemoryDetailFragment extends Fragment {
         if (getArguments() != null) {
             String memoryId = getArguments().getString(ARG_MEMORY_ID);
             memoryDetailViewModel.fetchMemoryDetails(memoryId);
+
+            // Initialize RecyclerView
+            binding.recyclerViewNearbyPlaces.setLayoutManager(new LinearLayoutManager(getContext()));
+            nearbyPlacesAdapter = new NearbyPlacesAdapter(getContext(), new ArrayList<>());
+            binding.recyclerViewNearbyPlaces.setAdapter(nearbyPlacesAdapter);
+
         }
 
         // Observe memory details
@@ -100,11 +112,16 @@ public class MemoryDetailFragment extends Fragment {
                 Timestamp timestamp = memory.getTimestamp();
                 binding.textViewDateTimeContent.setText(timestamp != null ? timestamp.toDate().toString() : "Unavailable");
                 binding.textViewWeatherContent.setText(memory.getWeatherInfo() != null ? memory.getWeatherInfo() : "Unavailable");
-                StringBuilder places = new StringBuilder();
-                for (Place place : memory.getPlaces()) {
-                    places.append("Name: ").append(place.getName()).append("\nVicinity: ").append(place.getVicinity()).append("\n\n");
+
+                // Populate Nearby Places in RecyclerView
+                if (memory.getPlaces() != null && !memory.getPlaces().isEmpty()) {
+                    binding.recyclerViewNearbyPlaces.setVisibility(View.VISIBLE);
+                    binding.textViewNearbyPlacesDetailEmpty.setVisibility(View.GONE);
+                    nearbyPlacesAdapter.setPlacesList(memory.getPlaces());
+                } else {
+                    binding.recyclerViewNearbyPlaces.setVisibility(View.GONE);
+                    binding.textViewNearbyPlacesDetailEmpty.setVisibility(View.VISIBLE);
                 }
-                binding.textViewNearbyPlacesContent.setText(memory.getPlaces() != null ? places : "Unavailable");
             }
         });
 
