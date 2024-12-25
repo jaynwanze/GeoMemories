@@ -41,6 +41,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!-- Silent Mode Preference -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Silent Mode"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp" />
+
+        <Switch
+            android:id="@+id/swtichSilentMode"
+            android:layout_width="222dp"
+            android:layout_height="wrap_content" />
+
         <!-- Save Preferences Button -->
         <Button
             android:id="@+id/buttonSavePreferences"

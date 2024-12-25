@@ -59,6 +59,11 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        // Set up Silent Mode Switch
+        binding.swtichSilentMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settingsViewModel.setSilentMode(isChecked);
+        });
+
         // Save Preferences Button
         binding.buttonSavePreferences.setOnClickListener(v -> savePreferences());
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.ca3.model.Memory;
+import com.example.ca3.model.Place;
 import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;
 import com.example.ca3.utils.LocationUtils;
@@ -24,6 +25,7 @@ public class MapViewModel extends AndroidViewModel {
     private final MutableLiveData<Location> currentLocation = new MutableLiveData<>();
     private final LocationUtils locationUtils;
     private final UserPreferencesManager userPreferencesManager;
+    private final MutableLiveData<Place> selectedPlace = new MutableLiveData<>();
 
     @Inject
     public MapViewModel(@NonNull Application application) {
@@ -41,6 +43,15 @@ public class MapViewModel extends AndroidViewModel {
     public LiveData<Location> getCurrentLocation() {
         return currentLocation;
     }
+
+    public LiveData<Place> getSelectedPlace() {
+        return selectedPlace;
+    }
+
+    public void setSelectedPlace(Place place) {
+        selectedPlace.setValue(place);
+    }
+
 
     public void fetchCurrentLocation() {
         locationUtils.getCurrentLocation();
@@ -62,6 +73,7 @@ public class MapViewModel extends AndroidViewModel {
             }
         });
     }
+
 
     public Memory getMemoryById(String memoryId) {
         if (memories.getValue() != null) {

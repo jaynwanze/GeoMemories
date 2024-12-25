@@ -12,6 +12,7 @@ public class UserPreferencesManager {
     private static final String PREFS_NAME = "user_prefs";
     private static final String KEY_MAP_TYPE = "map_type";
     private static final String KEY_GALLERY_DISPLAY = "gallery_display";
+    private static final String KEY_SILENT_MODE = "silent_mode";
     private static final String KEY_USER_ID = "user_id";
     private static UserPreferencesManager instance;
 
@@ -33,6 +34,7 @@ public class UserPreferencesManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_MAP_TYPE, preferences.getMapType());
         editor.putString(KEY_GALLERY_DISPLAY, preferences.getGalleryDisplay());
+        editor.putBoolean(KEY_SILENT_MODE, preferences.isSilentMode());
         editor.putString(KEY_USER_ID, preferences.getUserId());
         editor.apply();
     }
@@ -41,6 +43,7 @@ public class UserPreferencesManager {
         UserPreferences preferences = new UserPreferences();
         preferences.setMapType(sharedPreferences.getString(KEY_MAP_TYPE, "normal"));
         preferences.setGalleryDisplay(sharedPreferences.getString(KEY_GALLERY_DISPLAY, "grid"));
+        preferences.setSilentMode(sharedPreferences.getBoolean(KEY_SILENT_MODE, false));
         preferences.setUserId(sharedPreferences.getString(KEY_USER_ID, null));
         return preferences;
     }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Memory Description -->
+    <TextView
+        android:id="@+id/textViewInfoTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Memory Title"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textViewInfoSnippet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Short Description..."
+        android:layout_marginTop="4dp"
+        android:textSize="12sp" />
+
+    <!-- Weather Information -->
+    <TextView
+        android:id="@+id/textViewInfoWeather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Weather Info"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp" />
+
+
+    <!-- Photo -->
+    <ImageView
+        android:id="@+id/imageViewInfo"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

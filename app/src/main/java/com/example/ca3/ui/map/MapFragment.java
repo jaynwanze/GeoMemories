@@ -6,12 +6,17 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +43,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.GeoPoint;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +62,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private UserPreferencesManager userPreferencesManager;
     private Map<String, Marker> memoryMarkers = new HashMap<>();
+    private static final String ARG_PLACE_NAME = "place_name";
+    private static final String ARG_LATITUDE = "latitude";
+    private static final String ARG_LONGITUDE = "longitude";
+    private String selectedPlaceName = null;
+    private double selectedLatitude = 0.0;
+    private double selectedLongitude = 0.0;
+
+    public static MapFragment newInstance(String placeName, double latitude, double longitude) {
+        MapFragment fragment = new MapFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PLACE_NAME, placeName);
+        args.putDouble(ARG_LATITUDE, latitude);
+        args.putDouble(ARG_LONGITUDE, longitude);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,6 +89,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         // Obtain ViewModel
         mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
+
+        // Retrieve arguments if present
+        if (getArguments() != null) {
+            selectedPlaceName = getArguments().getString(ARG_PLACE_NAME);
+            selectedLatitude = getArguments().getDouble(ARG_LATITUDE);
+            selectedLongitude = getArguments().getDouble(ARG_LONGITUDE);
+        }
 
         // Initialize Map
         initializeMap();
@@ -164,6 +195,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f));
             }
         });
+
+        mapViewModel.getSelectedPlace().observe(getViewLifecycleOwner(), place -> {
+            if (place != null) {
+                displaySelectedPlace(place.getName(), place.getGeometry().getLocation().getLat(),
+                        place.getGeometry().getLocation().getLng());
+            }
+        });
     }
 
     @Override
@@ -188,6 +226,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnMarkerClickListener(marker -> {
             String memoryId = (String) marker.getTag();
             if (memoryId != null) {
+                //set info window click listener
+                //marker.showInfoWindow();
+                // Handle marker click
                 Intent intent = new Intent(getContext(), MemoryDetailActivity.class);
                 intent.putExtra("memory_id", memoryId);
                 startActivity(intent);
@@ -196,11 +237,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return false;
         });
 
+        // Set Info Window Click Listener
+        mMap.setOnInfoWindowClickListener(marker -> {
+            String memoryId = (String) marker.getTag();
+            if (memoryId != null) {
+                // Handle memory marker info window click
+                Intent intent = new Intent(getContext(), MemoryDetailActivity.class);
+                intent.putExtra("memory_id", memoryId);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "Selected Place: " + marker.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Set Custom InfoWindowAdapter
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
+        // Check if specific place details are provided
+        if (selectedPlaceName != null && selectedLatitude != 0.0 && selectedLongitude != 0.0) {
+            displaySelectedPlace(selectedPlaceName, selectedLatitude, selectedLongitude);
+        }
+
         binding.progressBarMap.setVisibility(View.GONE);
     }
+
+    private void displaySelectedPlace(String placeName, double lat, double lng) {
+        LatLng placeLatLng = new LatLng(lat, lng);
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(placeLatLng)
+                .title(placeName)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)); // Use a distinct color for selected place
+        Marker marker = mMap.addMarker(markerOptions);
+        if (marker != null) {
+            // Do not set a tag for selected place markers
+            marker.showInfoWindow(); // Automatically show default info window
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(placeLatLng, 15f)); // Zoom in on the selected place
+        }
+    }
+
 
     private void enableMyLocation() {
         if (mMap == null) return;
@@ -264,6 +338,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    private String getLocationName(Geocoder geocoder, GeoPoint geoPoint) {
+        double latitude = geoPoint.getLatitude();
+        double longitude = geoPoint.getLongitude();
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                return address.getAddressLine(0);
+            }
+        } catch (IOException e) {
+            Log.e("HomeViewModel", "Geocoder IOException: ", e);
+        }
+        return null;
+    }
 
     @Override
     public void onResume() {
@@ -278,7 +366,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         binding = null;
     }
 
-    // Custom InfoWindowAdapter Class
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         private final View window;
@@ -294,13 +381,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             ImageView image = window.findViewById(R.id.imageViewInfo);
 
             title.setText(memory.getDescription());
-            snippet.setText("Lat: " + memory.getLocation().getLatitude() +
-                    ", Lng: " + memory.getLocation().getLongitude());
+            snippet.setText(getLocationName(new Geocoder(getContext()), memory.getLocation()));
             weather.setText("Weather: " + memory.getWeatherInfo());
 
             Glide.with(getContext())
                     .load(memory.getPhotoUrl())
-                    .placeholder(R.drawable.ic_image_placeholder)
+                    .placeholder(android.R.drawable.ic_menu_gallery)
                     .into(image);
         }
 
@@ -311,14 +397,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Memory memory = mapViewModel.getMemoryById(memoryId);
                 if (memory != null) {
                     renderWindowText(memory);
+                    return window;
                 }
             }
-            return window;
+            // Return null for default info window
+            return null;
         }
 
         @Override
         public View getInfoContents(Marker marker) {
+            // Returning null uses the default contents
             return null;
         }
     }
+
 }

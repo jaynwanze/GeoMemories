@@ -100,10 +100,10 @@ public class CaptureMemoryViewModel extends AndroidViewModel {
                 new Callback.PlacesCallback() {
 
                     @Override
-                    public void onSuccess(List<PlacesResponse.Place> places) {
+                    public void onSuccess(List<Place> places) {
                         // Convert PlacesResponse.Place to Memory.Place
                         List<Place> nearbyPlacesList = new ArrayList<>();
-                        for (PlacesResponse.Place place : places) {
+                        for (Place place : places) {
                             Place memoryPlace = new Place(
                                     place.getName(),
                                     place.getVicinity(),
