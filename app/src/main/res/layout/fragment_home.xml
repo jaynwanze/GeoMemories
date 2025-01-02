@@ -12,29 +12,40 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Welcome Header -->
-        <LinearLayout
+        <!-- Header at the top -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/headerCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingBottom="16dp">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/textViewWelcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="Welcome, User!"
+                android:text="Home"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Recent Memories Carousel -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
+            android:layout_marginTop="16dp"
             android:text="Recent Memories"
             android:textSize="18sp"
             android:textStyle="bold" />

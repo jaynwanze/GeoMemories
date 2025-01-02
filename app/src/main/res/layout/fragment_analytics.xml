@@ -1,65 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/linearLayoutContainer"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.gallery.GalleryFragment"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    >
+
+    <!-- Header at the top -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/headerCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- PieChart for Memories Distribution -->
-        <TextView
-            android:id="@+id/textViewPieChartMemoriesByLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Memories By Location"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChartMemoriesByLocation"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- LineChart for Memories Over Time -->
-        <TextView
-            android:id="@+id/textViewLineChartTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Memories Over Time"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="Analytics"
+                android:textColor="@color/quantum_grey700"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/lineChartMemoriesOverTime"
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/headerCardView"
+        tools:layout_editor_absoluteX="0dp">
+
+        <LinearLayout
+            android:id="@+id/linearLayoutContainer"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginBottom="24dp" />
-
-
-        <!-- PieChart for Memories Distribution -->
-        <TextView
-            android:id="@+id/textViewPieChartMemoriesByMonth"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Memories By Month"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChartMemoriesByMonth"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginBottom="24dp" />
-    </LinearLayout>
-</ScrollView>
+            <!-- PieChart for Memories Distribution -->
+            <TextView
+                android:id="@+id/textViewPieChartMemoriesByLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Memories By Location"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- LineChart for Memories Over Time -->
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pieChartMemoriesByLocation"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:id="@+id/textViewLineChartTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Memories Over Time"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChartMemoriesOverTime"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginBottom="24dp" />
+
+
+            <!-- PieChart for Memories Distribution -->
+            <TextView
+                android:id="@+id/textViewPieChartMemoriesByMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Memories By Month"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pieChartMemoriesByMonth"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginBottom="24dp" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,14 +1,21 @@
 package com.example.ca3.ui.settings;
 
+import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import android.content.Context;
+
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.ca3.R;
@@ -65,7 +72,14 @@ public class SettingsFragment extends Fragment {
         });
 
         // Save Preferences Button
-        binding.buttonSavePreferences.setOnClickListener(v -> savePreferences());
+        binding.buttonSavePreferences.setOnClickListener(v ->
+        {
+            savePreferences();
+        Toast.makeText(getContext(), "Preferences saved successfully", Toast.LENGTH_SHORT).show();
+        });
+
+        // Setup the silent mode switch
+        setupSilentModeSwitch();
 
         // Set up Logout Button
         binding.buttonLogout.setOnClickListener(v -> {
@@ -75,10 +89,54 @@ public class SettingsFragment extends Fragment {
         return root;
     }
 
+
+    private void setupSilentModeSwitch() {
+        Switch silentModeSwitch = binding.swtichSilentMode;
+        silentModeSwitch.setChecked(settingsViewModel.isSilentMode());
+
+        silentModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Check if app has Notification Policy Access
+                    if (!hasNotificationPolicyAccess()) {
+                        promptNotificationPolicyAccess();
+                        // Revert the switch until permission is granted
+                        silentModeSwitch.setChecked(false);
+                        return;
+                    }
+                }
+
+                // Proceed to set silent mode
+                settingsViewModel.setSilentMode(isChecked);
+            }
+        });
+    }
+
+    private boolean hasNotificationPolicyAccess() {
+        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        return notificationManager.isNotificationPolicyAccessGranted();
+    }
+
+    private void promptNotificationPolicyAccess() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Permission Required")
+                .setMessage("To enable silent mode, please grant Do Not Disturb access.")
+                .setPositiveButton("Grant Access", (dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    Toast.makeText(getContext(), "Cannot enable silent mode without permission.", Toast.LENGTH_SHORT).show();
+                })
+                .setCancelable(false)
+                .show();
+    }
+
     private void savePreferences() {
         String selectedMapType = binding.spinnerMapType.getSelectedItem().toString();
         String selectedGalleryDisplay = binding.spinnerGalleryDisplay.getSelectedItem().toString();
-
+        boolean isSilentMode = binding.swtichSilentMode.isChecked();
         UserPreferences preferences = new UserPreferences();
         preferences.setMapType(selectedMapType);
         preferences.setGalleryDisplay(selectedGalleryDisplay);

@@ -1,10 +1,6 @@
 package com.example.ca3.ui.settings;
-
-import static androidx.core.content.ContextCompat.getSystemService;
-import static org.chromium.base.ContextUtils.getApplicationContext;
-import static dagger.hilt.android.internal.Contexts.getApplication;
-
 import android.app.Application;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -47,22 +43,36 @@ public class SettingsViewModel extends AndroidViewModel {
     }
 
     public void updateUserPreferences(UserPreferences newPreferences) {
+        if (newPreferences == null) {
+            return;
+        }
+        newPreferences.setUserId(userPreferencesManager.getUserId());
         userPreferencesManager.saveUserPreferences(newPreferences);
         userPreferencesLiveData.setValue(newPreferences);
     }
 
+
     public void setSilentMode(boolean isSilentMode) {
         UserPreferences preferences = userPreferencesLiveData.getValue();
+        Context context = getApplication();
         if (preferences != null) {
             preferences.setSilentMode(isSilentMode);
             updateUserPreferences(preferences);
-            AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-            if (audioManager != null) {
-                if (isSilentMode) {
-                    audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                } else {
-                    // Restore to previous or default ringer mode
-                    audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            if (context != null) {
+                AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                if (audioManager != null && notificationManager != null) {
+                    if (isSilentMode) {
+                        if (notificationManager.isNotificationPolicyAccessGranted()) {
+                            audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                        } else {
+                            // Revert the change if permission not granted
+                            preferences.setSilentMode(false);
+                            updateUserPreferences(preferences);
+                        }
+                    } else {
+                        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                    }
                 }
             }
         }

@@ -1,8 +1,9 @@
 package com.example.ca3.utils;
 
+import android.graphics.Bitmap;
+
 import com.example.ca3.model.Memory;
 import com.example.ca3.model.Place;
-import com.example.ca3.model.PlacesResponse;
 import com.example.ca3.model.User;
 
 import java.util.List;
@@ -49,6 +50,16 @@ public interface Callback {
     }
     public interface CreateMemoryCallback {
         void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface DeleteMemoryCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public interface MemoryPhotoCallback {
+        Bitmap onSuccess(String downloadUrl);
         void onFailure(Exception e);
     }
 }

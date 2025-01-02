@@ -3,6 +3,7 @@ package com.example.ca3.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,14 +20,27 @@ public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryView
 
     private List<Memory> memoryList = new ArrayList<>();
     private List<Memory> memoryListFull = new ArrayList<>();
-    private OnItemClickListener listener;
+    private OnItemClickListener clickListener;
+    private OnItemLongClickListener longClickListener;
 
+    // Click Listener Interface
     public interface OnItemClickListener {
         void onItemClick(Memory memory);
     }
 
+    // Long Click Listener Interface
+    public interface OnItemLongClickListener {
+        void onItemLongClick(Memory memory, int position);
+    }
+
+    // Setter for Click Listener
     public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
+        this.clickListener = listener;
+    }
+
+    // Setter for Long Click Listener
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.longClickListener = listener;
     }
 
     @NonNull
@@ -51,18 +65,20 @@ public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryView
         return memoryList.size();
     }
 
+    // Update the adapter's data
     public void submitList(List<Memory> memories) {
         memoryList = new ArrayList<>(memories);
         memoryListFull = new ArrayList<>(memories);
         notifyDataSetChanged();
     }
 
+    // Filter implementation
     @Override
-    public android.widget.Filter getFilter() {
+    public Filter getFilter() {
         return memoryFilter;
     }
 
-    private android.widget.Filter memoryFilter = new android.widget.Filter() {
+    private Filter memoryFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<Memory> filteredList = new ArrayList<>();
@@ -99,11 +115,22 @@ public class MemoryAdapter extends RecyclerView.Adapter<MemoryAdapter.MemoryView
             imageView = itemView.findViewById(R.id.imageViewMemory);
             textTitle = itemView.findViewById(R.id.textViewTitle);
 
+            // Handle Click Events
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
-                if (listener != null && position != RecyclerView.NO_POSITION) {
-                    listener.onItemClick(memoryList.get(position));
+                if (clickListener != null && position != RecyclerView.NO_POSITION) {
+                    clickListener.onItemClick(memoryList.get(position));
                 }
+            });
+
+            // Handle Long Click Events
+            itemView.setOnLongClickListener(v -> {
+                int position = getAdapterPosition();
+                if (longClickListener != null && position != RecyclerView.NO_POSITION) {
+                    longClickListener.onItemLongClick(memoryList.get(position), position);
+                    return true;
+                }
+                return false;
             });
         }
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.ca3.model.Memory;
 import com.example.ca3.model.Place;
+import com.example.ca3.model.UserPreferences;
 import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.FirebaseUtils;
 import com.example.ca3.utils.LocationUtils;
@@ -82,6 +83,14 @@ public class MapViewModel extends AndroidViewModel {
                     return memory;
                 }
             }
+        }
+        return null;
+    }
+
+    public String getMapTypeUserPreferences() {
+        UserPreferences preferences = userPreferencesManager.getUserPreferences();
+        if (preferences != null) {
+            return preferences.getMapType();
         }
         return null;
     }

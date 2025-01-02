@@ -84,6 +84,7 @@ dependencies {
 
     // Glide for Image Loading
     implementation (libs.glide)
+    implementation(libs.cardview)
     annotationProcessor (libs.compiler)
 
     // Room for Offline Caching

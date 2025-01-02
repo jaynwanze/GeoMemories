@@ -43,17 +43,6 @@ public class FirebaseUtils {
         );
     }
 
-    // Method to create a new Memory
-    public static void createMemory(Memory memory, Callback.CreateMemoryCallback callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("memories")
-                .document(memory.getId()) // Assuming 'id' is generated externally
-                .set(memory)
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(callback::onFailure);
-    }
-
-
     public static void getAllMemories(String userId, Callback.MemoryListCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("memories")
@@ -135,6 +124,23 @@ public class FirebaseUtils {
                         callback.onFailure(new Exception("Memory not found"));
                     }
                 })
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public static void deleteMemory(String userId, String memoryId, Callback.DeleteMemoryCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("memories")
+                .document(memoryId)
+                .delete()
+                .addOnSuccessListener(aVoid -> callback.onSuccess())
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public static void getMemoryPhoto(String userId, String memoryId, Callback.MemoryPhotoCallback callback) {
+        String storagePath = "memories/" + userId + "/" + memoryId;
+        StorageReference photoRef = storage.getReference().child(storagePath);
+        photoRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> callback.onSuccess(uri.toString()))
                 .addOnFailureListener(callback::onFailure);
     }
 }

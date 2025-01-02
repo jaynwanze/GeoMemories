@@ -75,7 +75,8 @@ public class HomeFragment extends Fragment {
         //set welcome heading for current user
         homeViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                binding.textViewWelcome.setText("Welcome, " + user.getName());
+                String msg = binding.textViewWelcome.getText().toString() + " - Welcome, " + user.getName();
+                binding.textViewWelcome.setText(msg);
             }
         });
     }

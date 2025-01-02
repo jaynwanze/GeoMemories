@@ -43,6 +43,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.IOException;
@@ -109,6 +110,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
 
+
+
     private void initializeMap() {
         SupportMapFragment mapFragment = (SupportMapFragment)
                 getChildFragmentManager().findFragmentById(R.id.map);
@@ -158,7 +161,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
+        String mapType = mapViewModel.getMapTypeUserPreferences();
+        if (mapType != null) {
+            int position = adapter.getPosition(mapType);
+            if (position != -1) {
+                binding.spinnerMapType.setSelection(position);
+            }
+        }
     }
+
+
 
     private void observeViewModel() {
         // Observe memories to add markers
