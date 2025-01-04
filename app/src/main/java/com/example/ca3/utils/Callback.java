@@ -59,7 +59,12 @@ public interface Callback {
     }
 
     public interface MemoryPhotoCallback {
-        Bitmap onSuccess(String downloadUrl);
+        void onSuccess(String downloadUrl);
         void onFailure(Exception e);
+    }
+
+    public interface MemoryPhotoListener {
+        void onMemoryPhotoLoaded(Bitmap bitmap);
+        void onMemoryPhotoLoadFailed(Exception e);
     }
 }

@@ -132,15 +132,14 @@ public class FirebaseUtils {
         db.collection("memories")
                 .document(memoryId)
                 .delete()
-                .addOnSuccessListener(aVoid -> callback.onSuccess())
-                .addOnFailureListener(callback::onFailure);
-    }
-
-    public static void getMemoryPhoto(String userId, String memoryId, Callback.MemoryPhotoCallback callback) {
-        String storagePath = "memories/" + userId + "/" + memoryId;
-        StorageReference photoRef = storage.getReference().child(storagePath);
-        photoRef.getDownloadUrl()
-                .addOnSuccessListener(uri -> callback.onSuccess(uri.toString()))
+                .addOnSuccessListener(
+                        aVoid -> {
+                            String storagePath = "memories/" + userId + "/" + memoryId;
+                            StorageReference photoRef = storage.getReference().child(storagePath);
+                            photoRef.delete();
+                            callback.onSuccess();
+                        }
+                )
                 .addOnFailureListener(callback::onFailure);
     }
 }

@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.ca3.model.WeatherResponse;
+
+import jakarta.inject.Singleton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -14,7 +16,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import com.example.ca3.services.WeatherService;
 
-
+@Singleton
 public class WeatherUtils {
 
     private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/";

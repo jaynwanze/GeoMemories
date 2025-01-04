@@ -14,7 +14,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.ca3.activity.LoginActivity;
 import com.example.ca3.model.Memory;
 import com.example.ca3.model.UserPreferences;
-import com.example.ca3.utils.BitmapDownloaderTask;
 import com.example.ca3.utils.Callback;
 import com.example.ca3.utils.DownloadManager;
 import com.example.ca3.utils.FirebaseUtils;
@@ -81,41 +80,6 @@ public class GalleryViewModel extends AndroidViewModel {
         return null;
     }
 
-    public Bitmap getMemoryPhoto(Memory memory) {
-        String currentUserId = userPreferencesManager.getUserId();
-        if (currentUserId == null) {
-            FirebaseAuth.getInstance().signOut();
-            userPreferencesManager.clearUserId();
-            Toast.makeText(this.getApplication(), "User not logged in", Toast.LENGTH_SHORT).show();
-            Log.d("HomeViewModel", "User not logged in");
-
-            Intent intent = new Intent(this.getApplication(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            this.getApplication().startActivity(intent);
-            return null;
-        }
-
-        FirebaseUtils.getMemoryPhoto(currentUserId, memory.getId(), new Callback.MemoryPhotoCallback() {
-            @Override
-            public Bitmap onSuccess(String downloadUrl) {
-                    new BitmapDownloaderTask(new BitmapDownloaderTask.BitmapDownloadListener() {
-                        @Override
-                        public Bitmap onBitmapDownloaded(Bitmap bitmap) {
-                            return bitmap;
-                        }
-                    }).execute(downloadUrl);
-                    return null;
-                }
-
-            @Override
-            public void onFailure(Exception e) {
-                // Handle failure
-                Toast.makeText(getApplication(), "Failed to download memory photo", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return null;
-    }
-
     public void saveImageToExternalStorageLegacy(Bitmap bitmap) {
         downloadManager.saveImageToExternalStorageLegacy(bitmap);
     }
@@ -140,7 +104,7 @@ public class GalleryViewModel extends AndroidViewModel {
             @Override
             public void onSuccess() {
                 Toast.makeText(getApplication(), "Memory removed successfully", Toast.LENGTH_SHORT).show();
-                //loadMemories();
+                loadMemories();
             }
 
             @Override

@@ -27,6 +27,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import jakarta.inject.Singleton;
+
+@Singleton
 public class DownloadManager {
 
     private static DownloadManager instance;
@@ -37,13 +40,13 @@ public class DownloadManager {
 
 
 
-    private DownloadManager() {
-        // Private constructor to prevent direct instantiation
+    private DownloadManager( Application application) {
+        this.application = application;
     }
 
     public static DownloadManager getInstance(Application application) {
         if (instance == null) {
-            instance = new DownloadManager();
+            instance = new DownloadManager(application);
         }
         return instance;
     }

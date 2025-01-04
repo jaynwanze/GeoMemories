@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,13 +23,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.ca3.R;
 import com.example.ca3.activity.MemoryDetailActivity;
 import com.example.ca3.adapter.MemoryAdapter;
 import com.example.ca3.databinding.FragmentGalleryBinding;
 import com.example.ca3.model.Memory;
+import com.example.ca3.utils.Callback;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.annotations.Nullable;
 
 @AndroidEntryPoint
 public class GalleryFragment extends Fragment {
@@ -158,17 +164,12 @@ public class GalleryFragment extends Fragment {
         builder.setTitle("Memory Options")
                 .setMessage("Choose an action for this memory.")
                 .setPositiveButton("Download", (dialog, which) -> {
-                    loadedBitmap = galleryViewModel.getMemoryPhoto(memory);
-                    if (loadedBitmap == null) {
-                        Toast.makeText(getContext(), "Failed to download memory photo", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    saveImageToGallery(loadedBitmap);
-                    Toast.makeText(getContext(), "Memory Photo has been downloaded to camera roll", Toast.LENGTH_SHORT).show();
+                    downloadAndSaveImage(memory);
+
+
                 })
                 .setNegativeButton("Remove", (dialog, which) -> {
                     galleryViewModel.removeMemory(memory);
-                    Toast.makeText(getContext(), "Remove Memory", Toast.LENGTH_SHORT).show();
                     memoryAdapter.notifyItemRemoved(position);
                 })
                 .setNeutralButton("Cancel", (dialog, which) -> {
@@ -178,6 +179,37 @@ public class GalleryFragment extends Fragment {
                 })
                 .setCancelable(false)
                 .show();
+    }
+
+    private void downloadAndSaveImage(Memory memory) {
+        if (memory.getPhotoUrl() == null) {
+            Toast.makeText(getContext(), "No image available for download.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Glide.with(this)
+                .asBitmap()
+                .load(memory.getPhotoUrl())
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.stat_notify_error)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        // Save the bitmap
+                        saveImageToGallery(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        // Handle if needed
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        Toast.makeText(getContext(), "Failed to load image for download.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void saveImageToGallery(Bitmap bitmap) {
