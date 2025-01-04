@@ -21,4 +21,5 @@
     <color name="bar_color3">#36A2EB</color>
     <color name="bar_color4">#FF5E56</color>
     <color name="bar_color5">#009688</color>
+    <color name="light_grey">#E6E6E6</color>
 </resources>

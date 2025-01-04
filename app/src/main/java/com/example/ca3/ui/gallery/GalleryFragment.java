@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.ca3.R;
 import com.example.ca3.activity.MemoryDetailActivity;
 import com.example.ca3.adapter.MemoryAdapter;
 import com.example.ca3.databinding.FragmentGalleryBinding;
@@ -36,6 +39,7 @@ public class GalleryFragment extends Fragment {
     private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 2001;
     private Bitmap loadedBitmap;
     private Bitmap bitmapToSave;
+    private String userPreferencesDisplayType;
 
 
     @Override
@@ -47,19 +51,7 @@ public class GalleryFragment extends Fragment {
         galleryViewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
 
         //setup adapter based off gallery display type
-        String galleryType = galleryViewModel.getGalleryTypeUserPreferences();
-        if (galleryType != null) {
-            if (galleryType.equals("Grid")) {
-                binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-            } else if (galleryType.equals("List")) {
-                binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                binding.recyclerView.setHasFixedSize(true);
-                binding.recyclerView.setNestedScrollingEnabled(false);
-                binding.recyclerView.setItemAnimator(null);
-                binding.recyclerView.setClipToPadding(false);
-            }
-        }
-        // Setup RecyclerView
+        setUpGalleryDisplayTypeSpinner();
         memoryAdapter = new MemoryAdapter();
         binding.recyclerView.setAdapter(memoryAdapter);
 
@@ -80,6 +72,45 @@ public class GalleryFragment extends Fragment {
         observeMemories();
 
         return root;
+    }
+
+    private void setUpGalleryDisplayTypeSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getContext(),
+                R.array.gallery_display_array,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerGalleryDisplay.setAdapter(adapter);
+        userPreferencesDisplayType = galleryViewModel.getGalleryTypeUserPreferences();
+        if (userPreferencesDisplayType.equalsIgnoreCase("grid")) {
+            binding.spinnerGalleryDisplay.setSelection(0);
+        } else {
+            binding.spinnerGalleryDisplay.setSelection(1);
+        }
+        binding.spinnerGalleryDisplay.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                userPreferencesDisplayType = galleryViewModel.getGalleryTypeUserPreferences();
+                String selectedDisplayType = parent.getItemAtPosition(position).toString();
+                if (selectedDisplayType.equalsIgnoreCase("grid")) {
+                    binding.spinnerGalleryDisplay.setSelection(0);
+                    binding.recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                } else {
+                    binding.spinnerGalleryDisplay.setSelection(1);
+                    binding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    binding.recyclerView.setHasFixedSize(true);
+                    binding.recyclerView.setNestedScrollingEnabled(false);
+                    binding.recyclerView.setItemAnimator(null);
+                    binding.recyclerView.setClipToPadding(false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void setupSearchView() {
@@ -183,7 +214,6 @@ public class GalleryFragment extends Fragment {
             }
         }
     }
-
 
     @Override
     public void onResume() {
